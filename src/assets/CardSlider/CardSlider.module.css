@@ -1,0 +1,104 @@
+.slider {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: linear-gradient(150deg, #07D65F 19.52%, #219653 84.22%);
+    padding: 40px;
+}
+
+.cards_container {
+    width: 100%;
+}
+
+.card {
+    width: 100%;
+    padding: 40px;
+    display: none;
+    border-radius: 5px;
+    place-items: center;
+    grid-template-columns: 1fr 1.2fr;
+    column-gap: 20px;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
+
+@media (max-width: 1000px) {
+    .card {
+      grid-template-columns: 1fr;
+    }
+  }
+
+.card.active {
+    display: grid;
+    animation: fadeInOut 500ms ease-in-out;
+}
+
+.card .imageWrapper {
+    max-width: 500px;
+    max-height: 500px;
+    padding: 50px;
+}
+
+.card h2 {
+    font-size: 40px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+}
+
+.card p {
+    text-align: justify;
+    margin-bottom: 10px;
+    letter-spacing: 1px;
+}
+
+.card .imageWrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+
+@keyframes fadeInOut {
+    0% {
+        transform: translateX(100vw);
+    }
+
+    100% {
+        transform: translateX(0px);
+    }
+}
+
+.buttonWrapper {
+    height: 100%;
+    background-color: #219653;
+}
+
+.prev_button,
+.next_button {
+    width: 50px !important;
+    height: 50px !important;
+    padding: 10px;
+    border: none;
+    display: flex;
+    cursor: pointer;
+    border-radius: 50%;
+    align-items: center;
+    justify-content: center;
+    transform: scale(1, 1);
+    border: 4px solid white;
+    transition: all 300ms ease-in-out;
+    background: linear-gradient(150deg, #07D65F 19.52%, #219653 84.22%);
+}
+
+.prev_button:hover,
+.next_button:hover {
+    transform: scale(1.1, 1.1);
+}
+
+.prev_button svg,
+.next_button svg {
+    fill: white;
+    stroke: white;
+    stroke-width: 1;
+}

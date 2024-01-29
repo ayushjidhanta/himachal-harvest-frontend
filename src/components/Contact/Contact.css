@@ -1,0 +1,56 @@
+.input-group{ 
+    height :7rem;
+    width:30rem;
+    justify-content: center;
+ }
+
+ .input-label{
+  display: block;
+  font-size: 1.3rem;
+  text-transform: uppercase;
+  color: rgb(120, 115, 115);
+  font-weight: bold;
+  margin-bottom: 1rem;
+  padding:2rem;
+ }
+
+ .input{
+     outline: none ;
+     border: none ;
+     width: 60%;
+     height: 20%;
+     min-height: 4rem;
+     padding : 1rem;
+     font-weight: bold;
+     color : #000000;
+     letter-spacing: 2px;
+     resize: none;
+ }
+ /*Featured hotels section for styling */
+ .section-head{
+  text-align: center;
+  margin-bottom: 5rem;
+  color : rgb(255, 255, 255);
+ }
+
+ .heading{
+     font-size: 4rem;
+     text-transform: uppercase;
+     display: block;
+ }
+
+.contact-form{
+    background: linear-gradient(to right, rgba(0, 0, 0, 0.8), rgba(80, 116, 65));
+    padding: 2.5rem;
+}
+
+
+
+
+ 
+
+ 
+ 
+
+
+

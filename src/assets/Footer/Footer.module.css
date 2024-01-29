@@ -1,0 +1,150 @@
+.footer {
+    background: linear-gradient(170deg, #07D65F 2%, #219653 98%);
+
+}
+
+.social_icons {
+    gap: 20px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.social_icons a {
+    width: 40px;
+    height: 40px;
+    display: grid;
+    padding: 10px;
+    border-radius: 50%;
+    place-items: center;
+    border: 1px solid #ffffff;
+    transition: all 0.2s ease-in-out;
+}
+
+.social_icons a:hover {
+    transform: matrix(1.1, 0, 0, 1.1, 0, 0);
+    transition: all 0.2s ease-in-out;
+}
+
+.social_icons a svg {
+    width: 100%;
+    height: 100%;
+    fill: #ffffff;
+}
+
+.newsletter {
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+    gap: 20px;
+}
+
+.newsletter p {
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    letter-spacing: 1px;
+    font-size: 20px;
+    color: #ffffff;
+}
+
+.newsletter .input_field {
+    gap: 10px;
+    width: 100%;
+    padding: 5px;
+    display: flex;
+    max-width: 600px;
+    overflow: hidden;
+    min-width: 300px;
+    align-items: center;
+    border-radius: 40px;
+    background-color: white;
+}
+
+.newsletter .input_field input {
+    width: 100%;
+    border: none;
+    padding: 10px;
+    outline: none;
+    font-size: 16px;
+}
+
+.newsletter .input_field input::placeholder {
+    font-size: 15px;
+}
+
+.newsletter .input_field button {
+    width: max-content !important;
+}
+
+.links {
+    color: white;
+    padding: 20px 150px;
+    display: flex;
+    column-gap: 50px;
+    row-gap: 20px;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-around;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
+
+.links .column {
+    text-align: center;
+}
+
+.links .column ul {
+    margin-top: 10px;
+    list-style: none;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.links .column ul li a {
+    width: max-content;
+    color: rgb(225, 225, 225);
+    display: inline-block;
+    text-decoration: none;
+    margin-bottom: 5px;
+    position: relative;
+    transition: all 0.2s ease-in-out;
+}
+
+.links .column ul li a:hover::after {
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 100%;
+    background-color: white;
+    height: 2px;
+    content: '';
+    animation: movein 0.3s ease-in-out forwards;
+}
+
+.links .column ul li a:hover {
+    transition: all 0.2s ease-in-out;
+    color: rgb(255, 255, 255);
+}
+
+@keyframes movein {
+    0% {
+        transform: translateY(5px);
+    }
+
+    100% {
+        transform: translateY(0px);
+    }
+}
+
+.copyright {
+    display: flex;
+    padding: 20px;
+    align-items: center;
+    flex-direction: column;
+    background-color: white;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}

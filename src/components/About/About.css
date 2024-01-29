@@ -1,0 +1,59 @@
+.pageAbout{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+}
+.wraper {
+    color: #fffdfd;
+    text-align: center;
+    margin-top: 0rem;
+}
+.head__title{
+    color:white;
+    font-size: 4rem;
+    letter-spacing: 2px;
+    font-family: monospace;
+}
+
+.pageAbout .inside{
+    background-color: rgb(254, 254, 254) ;
+    width: 70rem;
+    position: relative;
+    border-radius:2em;
+    /* box-shadow: 0 0.188em 1.55em rgb(100, 156,156,156); */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+    padding: 2rem;
+    border-radius: solid 2px white ;
+    border: solid 0.2rem rgb(0, 112, 9) ;
+    /* overflow-y: scroll; */
+
+}
+
+.card-img{
+    opacity: 0.4;
+    background-color: black;
+}
+
+.Content-Writing{
+    padding:2rem;
+    color: rgb(0, 0, 0);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: ' monospace';
+    word-spacing: 1%;
+    letter-spacing: 0.1em;
+    font-size: 1em;
+}
+.card-text{
+    font-size: 1.3rem;
+}
+.card-title{
+    font-size: 1.5em;
+}

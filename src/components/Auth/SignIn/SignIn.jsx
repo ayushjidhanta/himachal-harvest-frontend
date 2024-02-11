@@ -12,6 +12,7 @@ import Spinner from "../../../assets/Spinner/Spinner";
 import AlertDialog from "../../../assets/AlertDialog/AlertDialog";
 import PrimaryButton from "../../../assets/Button/PrimaryButton/PrimaryButton";
 import SecondaryButton from "../../../assets/Button/SecondaryButton/SecondaryButton";
+import { SpinnerHimachalHarvest } from "../../../assets/Spinner/Spinner";
 
 const SignIn = () => {
   const navigate = useNavigate();
@@ -58,6 +59,7 @@ const SignIn = () => {
 
     try {
       const response = await signIn(credentials);
+      await new Promise((resolve) => setTimeout(resolve, 4000));
       if (response.data.user_authenticated) {
         setSpinner(false);
         credentialHandler("username", "");
@@ -87,7 +89,9 @@ const SignIn = () => {
         alertMessage={alertDialog.message}
         handlerFunction={alertDialogHandler}
       />
-      <Spinner show={spinner} />
+      {/* <Spinner show={spinner} /> */}
+      {/* new spinner SpinnerHimachalHarvest on test*/}
+      <SpinnerHimachalHarvest show={spinner} />
       <div className={styles.login_page}>
         <div className={styles.form_wrapper}>
           <h1 className={styles.h1}>Sign In</h1>

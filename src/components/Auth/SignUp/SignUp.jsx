@@ -13,6 +13,7 @@ import Spinner from "../../../assets/Spinner/Spinner";
 import AlertDialog from "../../../assets/AlertDialog/AlertDialog";
 import PrimaryButton from "../../../assets/Button/PrimaryButton/PrimaryButton";
 import SecondaryButton from "../../../assets/Button/SecondaryButton/SecondaryButton";
+import { SpinnerHimachalHarvest } from "../../../assets/Spinner/Spinner";
 
 const SignUp = () => {
   const navigate = useNavigate();
@@ -44,8 +45,9 @@ const SignUp = () => {
     alertDialogHandler("isOpen", true);
     alertDialogHandler("message", message);
   };
-
+ 
   const authHandler = async (e) => {
+
     if (!credentials.username || !credentials.password) {
       showAlert(
         !credentials.username
@@ -54,11 +56,19 @@ const SignUp = () => {
       );
       return;
     }
-
+     // disabling the action on signup btn 
+     if (e._reactName === "onClick") {
+      setSpinner(true);
+      setTimeout(() => {
+      showAlert("We are Sorry! Only Admins can make new accounts Currently we are declining new signup's");
+      setSpinner(false); 
+    }, 4000);
+      return ;
+    }
     setSpinner(true);
-
     try {
       const response = await signUp(credentials);
+      await new Promise((resolve) => setTimeout(resolve, 4000));
       if (response.data.user_created) {
         setSpinner(false);
         credentialHandler("username", "");
@@ -88,7 +98,9 @@ const SignUp = () => {
         alertMessage={alertDialog.message}
         handlerFunction={alertDialogHandler}
       />
-      <Spinner show={spinner} />
+      {/* <Spinner show={spinner} /> */}
+      {/* Testing the new Spinner */}
+      <SpinnerHimachalHarvest show={spinner}/>
       <div className={styles.login_page}>
         <div className={styles.form_wrapper}>
           <h1 className={styles.h1}>Sign Up</h1>
@@ -107,7 +119,7 @@ const SignUp = () => {
               className={styles.input}
               onChange={setPassword}
             />
-            <PrimaryButton event={authHandler} title="Sign Up" />
+            <PrimaryButton event={authHandler} title="Sign Up"  />
             <SecondaryButton
               event={() => navigate("/signin")}
               title="Sign In"

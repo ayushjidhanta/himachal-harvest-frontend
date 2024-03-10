@@ -5,7 +5,7 @@
   justify-content: center;
   height: 100vh;
   text-align: center;
-  background-color: #7ebe7e;
+  background: linear-gradient(150deg, #07D65F 19.52%, #219653 84.22%);
 }
 
 .not-found-graphic {

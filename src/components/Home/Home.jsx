@@ -8,6 +8,7 @@ import CardSlider from "../../assets/CardSlider/CardSlider";
 import farmerImage from "../../assets/Images/farmer.png";
 import tractorImage from "../../assets/Images/tractor.png";
 import earthImage from "../../assets/Images/earth.png";
+import Navbar2 from "./Navbar2";
 
 const scrollDown = () => {
   window.scrollTo({
@@ -39,7 +40,8 @@ function Home() {
   ];
   return (
     <>
-      <NavBar />
+      {/* <NavBar /> */}
+      <Navbar2/>
       <main className={styles.home}>
         <div className={styles.content}>
           <h1>Himachal Harvest</h1>

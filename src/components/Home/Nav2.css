@@ -1,271 +1,325 @@
-@import url('https://fonts.googleapis.com/css2?family=Robots:wght@100;300;400;500;700&diplay=swap');
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700&display=swap");
 
-:root{
-    --main-color: #231e1e;
-    --black:rgb(0, 0, 0);
-    --bg: rgb(80, 116, 65);
-    /* --bg: rgb(115, 169, 113); */
-    --border: 0.2rem solid rgba(255, 244, 244, 0.982)
-}
-*{
-    font-family: 'Roboto', sans-serif;
-    margin: 0;
-    padding:0;
-    box-sizing:border-box;
-    outline: none; 
-    border: none;
-    text-decoration: none;
-    /* text-transform: capitalize; */
-    transition: .2s linear; 
-}
- /* created to fix site margin bugs  */
-
-html{
-    font-size: 62.2%;
-    overflow-x: hidden;
-    scroll-padding-top: 9px;
-    scroll-behavior: smooth;
-}
-
-html::webkit-scrollbar{
-    width: .8px;
-}
-
-html::webkit-scrollbar-track{
-    background:transparent;
-}
-
-html::webkit-scrollbar-thumb{
-    background:rgb(255, 252, 252);
-    border-radius: 16px;
-}
-
-body{
-    background: var(--bg);
-}
-
-.btnn{
-    margin-top: 1rem;
-    display:inline-block ;
-    padding: 7rem 3rem;
-    font-size: 1.7rem;
-    color: rgb(255, 255, 255);
-    background: var(--main-color);
-    cursor: pointer;
-}
-
-.btnn:hover{
-    letter-spacing: .2rem;
-}
-
-.header{
-    background: var(--bg);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 1.5rem 7%;
-    border-bottom: var(--border);
-    position: fixed;
-    left: 0; right: 0;
-    z-index: 1000;
-}
-
-.header .navbar a{
-  margin: 0 1rem;
-  font-size: 1.6rem;
-  color:rgb(255, 255, 255);
+* {
+  font-family: "Roboto", sans-serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  outline: none;
+  border: none;
   text-decoration: none;
+  text-transform: capitalize;
+  transition: 0.2s linear;
 }
 
-.header .navbar a:hover{
-    color: var(--main-color);
-    border-bottom: 1rem solid var(--maincolor);
-    padding-bottom: 4rem;
-}
-.icons {
-    display: flex;
-}
-.header .icons div{
-    color: rgb(255, 255, 255);
-    cursor: pointer;
-    font-size: 2.5rem;
-    margin-left: 2rem;
+body {
+  background: var(--bg);
 }
 
-.header .icons div:hover{
-    color: var(--main-color);
-
+.cart-item img {
+  object-fit: cover;
 }
 
-#menu-btnn{
-    display:none; 
+.btnn {
+  margin-top: 8px;
+  display: inline-block;
+  padding: 112px 48px;
+  font-size: 17px;
+  color: rgb(255, 255, 255);
+  background: black;
+  cursor: pointer;
 }
 
-.header .search-form{
-    position:absolute;
-    top: 115%; right: 7%;
-    background: rgb(255, 255, 255);
-    /* background: linear-gradient(
-    103.49deg,
-    #ffffff -28.13%,
-    rgba(80, 116, 65) 90.84%
-  ); */
-    width: 50rem;
-    height: 5rem;
-    display: flex;
-    align-items: center;
-    transform: scaleY(0);
-    transform-origin: top;
+.btnn:hover {
+  letter-spacing: 2px;
 }
 
-/* useRef hook is used here---- */
-.header .search-form.active{
- transform: scaleY(1);
+.header {
+  background: linear-gradient(150deg, #07d65f 19.52%, #219653 84.22%);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 7%;
+  border-bottom: 2px solid rgb(255, 255, 255);
+  position: relative;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+}
+.header.fixed {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
 }
 
-header .search-form input{
- height: 100%;
- width: 100%;
- font-size: 1.6rem;
- color: var(--black);
- padding: 1rem;
- text-transform: none;
+.header .navbar a {
+  margin: 0 16px;
+  font-size: 16px;
+  color: rgb(255, 255, 255);
+  text-decoration: none;
+  padding: 8px;
+  position: relative;
 }
 
-.header .search-form label{
-    cursor: pointer;
-    font-size: 2.2rem;
-    margin-right: 1.5rem;
-    color:var(--black);
-
+.header .navbar a:hover {
+  color: rgb(255, 255, 255);
+  border-bottom: 16px solid var(--maincolor);
 }
 
-.header .search-form label:hover{
-    color:var(--main-color);
-
+.header .navbar a::before {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 3px;
+  bottom: 0;
+  left: 0;
+  background-color: rgb(255, 255, 255);
+  transform: scaleX(0);
+  transform-origin: bottom right;
+  transition: transform 0.3s ease-in-out;
 }
- 
-/* cart items section----- */
+
+.header .navbar a:hover::before {
+  transform: scaleX(1);
+  transform-origin: bottom left;
+}
+.header .icons {
+  display: flex;
+}
+
+.header .icons div {
+  color: rgb(255, 255, 255);
+  cursor: pointer;
+  font-size: 16px;
+  margin-left: 30px;
+}
+
+.header .icons .search-icon:hover {
+  color: black;
+}
+
+.header .icons .cart-icon:hover {
+  color: black;
+}
+
+.header .icons .menu-icon:hover {
+  color: black;
+}
+
+#menu-btnn {
+  display: none;
+}
+
+.header .search-form {
+  position: absolute;
+  top: 115%;
+  right: 7%;
+  background: rgb(255, 255, 255);
+  width: 225px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  transform: scaleY(0);
+  transform-origin: top;
+}
+
+.header .search-form.active {
+  transform: scaleY(1);
+}
+
+header .search-form input {
+  height: 100%;
+  width: 100%;
+  font-size: 16px;
+  color: rgb(0, 0, 0);
+  padding: 16px;
+  text-transform: none;
+}
+
+.header .search-form label {
+  cursor: pointer;
+  font-size: 22px;
+  margin-right: 24px;
+  color: rgb(0, 0, 0);
+}
+
+.header .search-form label:hover {
+  color: black;
+}
+
+/* Add a class to hide the cart container by default */
 .header .cart-items-container {
-    position: absolute;
-    top:100%;
-    right: -100%;
-    height: calc(100vh - 9.5rem);
-    background : white ;
-    padding: 0 1.5rem;
-
-}
-/* useRef hook is used here---- */
-.header .cart-items-container.active{
-   right: 0;
-   
+  position: absolute;
+  top: 100%;
+  right: -100%;
+  height: calc(120vh - 9.5rem);
+  background: white;
+  padding: 0 24px;
+  display: none;
 }
 
-.header .cart-items-container .cart-item{
-    position: relative;
-    margin: 2rem 0;
-    display: flex;
-    align-items:center;
-    gap:1.5 rem;
+/* Add a class to make the container visible */
+.header .cart-items-container.active {
+  display: block;
+  right: 0;
 }
 
-.header .cart-items-container .cart-item .fa-times{
-position: absolute;
-top: 1rem; 
-right: 1rem;
-font-size: 2rem;
-cursor: pointer;
-color: var(--black);
+.header .cart-items-container .cart-item {
+  position: relative;
+  margin: 32px 0;
+  display: flex;
+  align-items: center;
+  gap: 24px;
 }
 
-.header .cart-items-container .cart-item .fa-times:hover{
-    color:var(--main-color);
+.header .cart-items-container .cart-item .fa-times {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  font-size: 32px;
+  cursor: pointer;
+  color: rgb(0, 0, 0);
+}
 
+.header .cart-items-container .cart-item .fa-times:hover {
+  color: black;
 }
-.header .cart-items-container .cart-item img{
-    height: 7rem;
-    width: 9rem;
+
+.header .cart-items-container .cart-item img {
+  height: 112px;
+  width: 144px;
 }
-.header .cart-items-container .cart-item .content h3{
-    font-size: 2rem;
-    color: var(--black);
-    padding-bottom: .5rem;
+
+.header .cart-items-container .cart-item .content h3 {
+  font-size: 2px;
+  color: rgb(0, 0, 0);
+  padding-bottom: 0.5px;
 }
-.header .cart-items-container .cart-item .content .price{
-    font-size: 2rem;
-    color:var(--black);
+
+.header .cart-items-container .cart-item .content .price {
+  font-size: 2px;
+  color: rgb(0, 0, 0);
 }
-/* Checkout button --------*/
+
 .header .cart-items-container .Checkout {
-color:rgb(255, 255, 255);
-background-color: rgb(29, 116, 55);
-border-radius: 10rem;
-height: 4rem;
-width: 15rem;
-transition:linear;
-font-size: 10px;
-font-weight:700;
+  color: rgb(255, 255, 255);
+  background-color: #07d65f;
+  border-radius: 160px;
+  height: 40px;
+  width: 100%;
+  transition: linear;
+  font-size: 10px;
+  font-weight: 700;
 }
 
-@media (max-width:991px){
-    html{
-        font-size: 55%;
-
-    }
-    .header{
-        padding: 1.5rem 2rem;
-    }
+@media (max-width: 991px) {
+  .header {
+    padding: 24px 32px;
+  }
 }
 
-@media (max-width:991px){
-    #menu-btnn{
-        display: inline-block;
+@media (max-width: 991px) {
+  #menu-btnn {
+    display: inline-block;
+  }
 
-    }
+  .header .navbar {
+    position: absolute;
+    top: 100%;
+    right: -100%;
+    background: rgb(245, 245, 245);
+    height: calc(100vh - 9.5px);
+    display: inline-block;
+    display: none;
+  }
 
-    .header .navbar{
-        position: absolute;
-        top:100%;
-        right: -100%;
-        background: rgb(249, 245, 245);
-        height: calc(100vh - 9.5rem);
-        display: inline-block;
-    }
-   /* useRef hook is used here---- */
-    .header .navbar.active{
-        right: 0;
-    }
-     .header .navbar a{
-        color:var(--black);
-        display: block;
-        padding: .5rem;
-        margin: 1.5rem;
-        font-size: 2rem;
-     }
-     .header .search-form{
-        width: 90%;
-        right: 2rem;
-     }
+  .header .navbar a {
+    color: rgb(0, 0, 0);
+    display: block;
+    padding: 8px;
+    margin: 24px;
+    font-size: 16px;
+    color: rgb(245, 245, 245);
+    background-color: #07d65f;
+    border-radius: 25px;
+    transition: background-color 0.3s ease-in-out;
+    position: relative;
+    text-decoration: none;
+    text-align: center;
+  }
+
+  .header .navbar a:hover {
+    color: black;
+    background-color: rgb(245, 245, 245);
+  }
+
+  .header .navbar a::before {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 3px;
+    bottom: 0;
+    left: 0;
+    background-color: black;
+    transform: scaleX(0);
+    transform-origin: bottom right;
+    transition: transform 0.3s ease-in-out;
+  }
+
+  .header .navbar a:hover::before {
+    transform: scaleX(1);
+    transform-origin: bottom left;
+  }
+
+  .header .navbar.active {
+    display: block;
+    right: 0;
+  }
+
+  .header .search-form {
+    width: 90%;
+    right: 32px;
+  }
 }
 
-/* cart bag quantity--- */
-.bag{
-    align-items: center;
-    position: center;
+.bag {
+  align-items: center;
+  position: center;
 }
 
-  .cart-items-container .bag-quantity{
+.cart-items-container .bag-quantity {
   display: flex;
   align-items: center;
   justify-content: center;
   height: 25px;
   width: 25px;
-  color : white;
-  background:rgb(24, 109, 49);
+  color: white;
+  background: #07d65f;
   border-radius: 50%;
-  padding:1rem;
+  padding: 16px;
   font-size: 15px;
-  font-weight:700;
-  /* position: absolute; */
+  font-weight: 700;
 }
 
+/* Additional styles for the updated class names */
+.header .icons .search-icon,
+.header .icons .cart-icon,
+.header .icons .menu-icon {
+  color: rgb(255, 255, 255);
+  cursor: pointer;
+  font-size: 16px;
+  margin-left: 30px;
+}
+
+.header .icons .search-icon:hover {
+  color: rgb(255, 255, 255);
+}
+
+.header .icons .cart-icon:hover {
+  color: rgb(255, 255, 255);
+}
+
+.header .icons .menu-icon:hover {
+  color: rgb(255, 255, 255);
+}

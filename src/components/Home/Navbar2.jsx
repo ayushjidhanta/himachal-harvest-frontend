@@ -1,13 +1,26 @@
-import React, { useRef } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { useNavigate } from "react-router";
-// import img1 from "./images/apple1.jpg";
-// import "./Nav2.css";
+import "./Nav2.css";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
+import cartImage from "../../assets/Images/Cart.gif";
 
 export default function Navbar2() {
-  const { cartItems } = useSelector((state) => state.cart);
   const navigate = useNavigate();
+  const { cartItems } = useSelector((state) => state.cart);
+  const [isFixed, setIsFixed] = useState(false);
+
+  const handleScroll = () => {
+    const offset = window.scrollY;
+    setIsFixed(offset > 0);
+  };
+
+  useEffect(() => {
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
 
   const togglePg = () => {
     navigate("/cart");
@@ -19,18 +32,27 @@ export default function Navbar2() {
 
   const toggleSearch = () => {
     searchRef.current.classList.toggle("active");
+
+    navbarRef.current.classList.remove("active");
+    cartItemRef.current.classList.remove("active");
   };
 
   const toggleMenu = () => {
     navbarRef.current.classList.toggle("active");
+
+    searchRef.current.classList.remove("active");
+    cartItemRef.current.classList.remove("active");
   };
 
   const toggleCart = () => {
     cartItemRef.current.classList.toggle("active");
+
+    searchRef.current.classList.remove("active");
+    navbarRef.current.classList.remove("active");
   };
 
   return (
-    <div className="header">
+    <div className={`header ${isFixed ? "fixed" : ""}`}>
       <nav className="navbar" ref={navbarRef}>
         <Link to="/home">Home</Link>
         <Link to="/about">About</Link>
@@ -40,32 +62,28 @@ export default function Navbar2() {
       </nav>
 
       <div className="icons">
-        <div
-          className="fas fa-search"
-          id="search-btnn"
-          onClick={toggleSearch}
-        ></div>
-        <div
-          className="fas fa-shopping-cart"
-          id="cart-btnn"
-          onClick={toggleCart}
-        ></div>
-        <div className="fas fa-bars" id="menu-btnn" onClick={toggleMenu}></div>
+          <div className="search-icon" 
+          id="search-btnn" 
+          onClick={toggleSearch}>Search</div>
+      <div 
+          className="cart-icon" 
+          id="cart-btnn" 
+          onClick={toggleCart}>Cart</div>
+      <div className="menu-icon" 
+          id="menu-btnn" 
+          onClick={toggleMenu}>Menu</div>
       </div>
 
       <div className="search-form" ref={searchRef}>
         <input type="search" id="search-box" placeholder="search here..." />
-        <label htmlFor="search-box" className="fas fa-search"></label>
+        <label htmlFor="search-box" className="search-icon"></label>
       </div>
+
 
       {/* CART ITEMS CONTAINER----- */}
       <div className="cart-items-container" ref={cartItemRef}>
         <div className="cart-item">
-          <img
-            src="/public-images/HH.jpg"
-            className="img-fluid"
-            alt="..."
-          ></img>
+          <img src={cartImage} alt="Loading..."></img>
           <span className="fas fa-time"></span>
           <div className="content ">
             {/* <h3>Total Items</h3> */}

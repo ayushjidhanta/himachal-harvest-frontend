@@ -56,19 +56,10 @@ const SignUp = () => {
       );
       return;
     }
-     // disabling the action on signup btn 
-     if (e._reactName === "onClick") {
-      setSpinner(true);
-      setTimeout(() => {
-      showAlert("We are Sorry! Only Admins can make new accounts Currently we are declining new signup's");
-      setSpinner(false); 
-    }, 4000);
-      return ;
-    }
+    
     setSpinner(true);
     try {
       const response = await signUp(credentials);
-      await new Promise((resolve) => setTimeout(resolve, 4000));
       if (response.data.user_created) {
         setSpinner(false);
         credentialHandler("username", "");

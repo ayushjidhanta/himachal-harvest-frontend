@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import styles from "./SignIn.module.css";
 import { useNavigate } from "react-router";
-
+import Roles from "../../../enum/Roles";
 // Custom React Packages
 import { signIn } from "../../../service/AuthService/api";
 
@@ -45,6 +45,11 @@ const SignIn = () => {
     alertDialogHandler("message", message);
   };
 
+  const checkRole = (Role) => {
+    if (Role.username == Roles.ADMIN) return true;
+    return false;
+  };
+
   const authHandler = async (e) => {
     if (!credentials.username || !credentials.password) {
       showAlert(
@@ -59,7 +64,15 @@ const SignIn = () => {
 
     try {
       const response = await signIn(credentials);
-      await new Promise((resolve) => setTimeout(resolve, 4000));
+      const Role = JSON.parse(response.config.data);
+      if (response.data.user_authenticated && !checkRole(Role)) {
+        showAlert(
+          "We Are Sorry! Only Admins Can Login To The Application. Currently We are Declining New Users"
+        );
+        setSpinner(false);
+        return;
+      }
+
       if (response.data.user_authenticated) {
         setSpinner(false);
         credentialHandler("username", "");

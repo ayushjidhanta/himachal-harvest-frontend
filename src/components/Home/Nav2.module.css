@@ -1,4 +1,3 @@
-@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700&display=swap");
 
 * {
   font-family: "Roboto", sans-serif;
@@ -16,7 +15,7 @@ body {
   background: var(--bg);
 }
 
-.cart-item img {
+.cart_item img {
   object-fit: cover;
 }
 
@@ -39,7 +38,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 24px 7%;
+  padding: 20px 7%;
   border-bottom: 2px solid rgb(255, 255, 255);
   position: relative;
   left: 0;
@@ -95,15 +94,15 @@ body {
   margin-left: 30px;
 }
 
-.header .icons .search-icon:hover {
+.header .icons .search_icon:hover {
   color: black;
 }
 
-.header .icons .cart-icon:hover {
+.header .icons .cart_icon:hover {
   color: black;
 }
 
-.header .icons .menu-icon:hover {
+.header .icons .menu_icon:hover {
   color: black;
 }
 
@@ -111,7 +110,7 @@ body {
   display: none;
 }
 
-.header .search-form {
+.header .search_form {
   position: absolute;
   top: 115%;
   right: 7%;
@@ -124,11 +123,11 @@ body {
   transform-origin: top;
 }
 
-.header .search-form.active {
+.header .search_form.active {
   transform: scaleY(1);
 }
 
-header .search-form input {
+header .search_form input {
   height: 100%;
   width: 100%;
   font-size: 16px;
@@ -137,19 +136,19 @@ header .search-form input {
   text-transform: none;
 }
 
-.header .search-form label {
+.header .search_form label {
   cursor: pointer;
   font-size: 22px;
   margin-right: 24px;
   color: rgb(0, 0, 0);
 }
 
-.header .search-form label:hover {
+.header .search_form label:hover {
   color: black;
 }
 
 /* Add a class to hide the cart container by default */
-.header .cart-items-container {
+.header .cart_items_container {
   position: absolute;
   top: 100%;
   right: -100%;
@@ -160,12 +159,12 @@ header .search-form input {
 }
 
 /* Add a class to make the container visible */
-.header .cart-items-container.active {
+.header .cart_items_container.active {
   display: block;
   right: 0;
 }
 
-.header .cart-items-container .cart-item {
+.header .cart_items_container .cart_item {
   position: relative;
   margin: 32px 0;
   display: flex;
@@ -173,7 +172,7 @@ header .search-form input {
   gap: 24px;
 }
 
-.header .cart-items-container .cart-item .fa-times {
+.header .cart_items_container .cart_item .fa-times {
   position: absolute;
   top: 16px;
   right: 16px;
@@ -182,27 +181,27 @@ header .search-form input {
   color: rgb(0, 0, 0);
 }
 
-.header .cart-items-container .cart-item .fa-times:hover {
+.header .cart_items_container .cart_item .fa-times:hover {
   color: black;
 }
 
-.header .cart-items-container .cart-item img {
+.header .cart_items_container .cart_item img {
   height: 112px;
   width: 144px;
 }
 
-.header .cart-items-container .cart-item .content h3 {
+.header .cart_items_container .cart_item .content h3 {
   font-size: 2px;
   color: rgb(0, 0, 0);
   padding-bottom: 0.5px;
 }
 
-.header .cart-items-container .cart-item .content .price {
+.header .cart_items_container .cart_item .content .price {
   font-size: 2px;
   color: rgb(0, 0, 0);
 }
 
-.header .cart-items-container .Checkout {
+.header .cart_items_container .Checkout {
   color: rgb(255, 255, 255);
   background-color: #07d65f;
   border-radius: 160px;
@@ -215,7 +214,7 @@ header .search-form input {
 
 @media (max-width: 991px) {
   .header {
-    padding: 24px 32px;
+    padding: 20px 32px;
   }
 }
 
@@ -277,7 +276,7 @@ header .search-form input {
     right: 0;
   }
 
-  .header .search-form {
+  .header .search_form {
     width: 90%;
     right: 32px;
   }
@@ -288,7 +287,7 @@ header .search-form input {
   position: center;
 }
 
-.cart-items-container .bag-quantity {
+.cart_items_container .bag_quantity {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -303,23 +302,23 @@ header .search-form input {
 }
 
 /* Additional styles for the updated class names */
-.header .icons .search-icon,
-.header .icons .cart-icon,
-.header .icons .menu-icon {
+.header .icons .search_icon,
+.header .icons .cart_icon,
+.header .icons .menu_icon {
   color: rgb(255, 255, 255);
   cursor: pointer;
   font-size: 16px;
   margin-left: 30px;
 }
 
-.header .icons .search-icon:hover {
+.header .icons .search_icon:hover {
   color: rgb(255, 255, 255);
 }
 
-.header .icons .cart-icon:hover {
+.header .icons .cart_icon:hover {
   color: rgb(255, 255, 255);
 }
 
-.header .icons .menu-icon:hover {
+.header .icons .menu_icon:hover {
   color: rgb(255, 255, 255);
 }

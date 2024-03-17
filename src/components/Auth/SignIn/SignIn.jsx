@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import styles from "./SignIn.module.css";
 import { useNavigate } from "react-router";
-
+import Roles from "../../../enum/Roles";
 // Custom React Packages
 import { signIn } from "../../../service/AuthService/api";
 
@@ -12,6 +12,7 @@ import Spinner from "../../../assets/Spinner/Spinner";
 import AlertDialog from "../../../assets/AlertDialog/AlertDialog";
 import PrimaryButton from "../../../assets/Button/PrimaryButton/PrimaryButton";
 import SecondaryButton from "../../../assets/Button/SecondaryButton/SecondaryButton";
+import { SpinnerHimachalHarvest } from "../../../assets/Spinner/Spinner";
 
 const SignIn = () => {
   const navigate = useNavigate();
@@ -44,6 +45,11 @@ const SignIn = () => {
     alertDialogHandler("message", message);
   };
 
+  const checkRole = (Role) => {
+    if (Role.username == Roles.ADMIN) return true;
+    return false;
+  };
+
   const authHandler = async (e) => {
     if (!credentials.username || !credentials.password) {
       showAlert(
@@ -58,6 +64,15 @@ const SignIn = () => {
 
     try {
       const response = await signIn(credentials);
+      const Role = JSON.parse(response.config.data);
+      if (response.data.user_authenticated && !checkRole(Role)) {
+        showAlert(
+          "We Are Sorry! Only Admins Can Login To The Application. Currently We are Declining New Users"
+        );
+        setSpinner(false);
+        return;
+      }
+
       if (response.data.user_authenticated) {
         setSpinner(false);
         credentialHandler("username", "");
@@ -87,7 +102,9 @@ const SignIn = () => {
         alertMessage={alertDialog.message}
         handlerFunction={alertDialogHandler}
       />
-      <Spinner show={spinner} />
+      {/* <Spinner show={spinner} /> */}
+      {/* new spinner SpinnerHimachalHarvest on test*/}
+      <SpinnerHimachalHarvest show={spinner} />
       <div className={styles.login_page}>
         <div className={styles.form_wrapper}>
           <h1 className={styles.h1}>Sign In</h1>

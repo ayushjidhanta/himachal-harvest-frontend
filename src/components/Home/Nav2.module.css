@@ -1,0 +1,324 @@
+
+* {
+  font-family: "Roboto", sans-serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  outline: none;
+  border: none;
+  text-decoration: none;
+  text-transform: capitalize;
+  transition: 0.2s linear;
+}
+
+body {
+  background: var(--bg);
+}
+
+.cart_item img {
+  object-fit: cover;
+}
+
+.btnn {
+  margin-top: 8px;
+  display: inline-block;
+  padding: 112px 48px;
+  font-size: 17px;
+  color: rgb(255, 255, 255);
+  background: black;
+  cursor: pointer;
+}
+
+.btnn:hover {
+  letter-spacing: 2px;
+}
+
+.header {
+  background: linear-gradient(150deg, #07d65f 19.52%, #219653 84.22%);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 7%;
+  border-bottom: 2px solid rgb(255, 255, 255);
+  position: relative;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+}
+.header.fixed {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+}
+
+.header .navbar a {
+  margin: 0 16px;
+  font-size: 16px;
+  color: rgb(255, 255, 255);
+  text-decoration: none;
+  padding: 8px;
+  position: relative;
+}
+
+.header .navbar a:hover {
+  color: rgb(255, 255, 255);
+  border-bottom: 16px solid var(--maincolor);
+}
+
+.header .navbar a::before {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 3px;
+  bottom: 0;
+  left: 0;
+  background-color: rgb(255, 255, 255);
+  transform: scaleX(0);
+  transform-origin: bottom right;
+  transition: transform 0.3s ease-in-out;
+}
+
+.header .navbar a:hover::before {
+  transform: scaleX(1);
+  transform-origin: bottom left;
+}
+.header .icons {
+  display: flex;
+}
+
+.header .icons div {
+  color: rgb(255, 255, 255);
+  cursor: pointer;
+  font-size: 16px;
+  margin-left: 30px;
+}
+
+.header .icons .search_icon:hover {
+  color: black;
+}
+
+.header .icons .cart_icon:hover {
+  color: black;
+}
+
+.header .icons .menu_icon:hover {
+  color: black;
+}
+
+#menu-btnn {
+  display: none;
+}
+
+.header .search_form {
+  position: absolute;
+  top: 115%;
+  right: 7%;
+  background: rgb(255, 255, 255);
+  width: 225px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  transform: scaleY(0);
+  transform-origin: top;
+}
+
+.header .search_form.active {
+  transform: scaleY(1);
+}
+
+header .search_form input {
+  height: 100%;
+  width: 100%;
+  font-size: 16px;
+  color: rgb(0, 0, 0);
+  padding: 16px;
+  text-transform: none;
+}
+
+.header .search_form label {
+  cursor: pointer;
+  font-size: 22px;
+  margin-right: 24px;
+  color: rgb(0, 0, 0);
+}
+
+.header .search_form label:hover {
+  color: black;
+}
+
+/* Add a class to hide the cart container by default */
+.header .cart_items_container {
+  position: absolute;
+  top: 100%;
+  right: -100%;
+  height: calc(120vh - 9.5rem);
+  background: white;
+  padding: 0 24px;
+  display: none;
+}
+
+/* Add a class to make the container visible */
+.header .cart_items_container.active {
+  display: block;
+  right: 0;
+}
+
+.header .cart_items_container .cart_item {
+  position: relative;
+  margin: 32px 0;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.header .cart_items_container .cart_item .fa-times {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  font-size: 32px;
+  cursor: pointer;
+  color: rgb(0, 0, 0);
+}
+
+.header .cart_items_container .cart_item .fa-times:hover {
+  color: black;
+}
+
+.header .cart_items_container .cart_item img {
+  height: 112px;
+  width: 144px;
+}
+
+.header .cart_items_container .cart_item .content h3 {
+  font-size: 2px;
+  color: rgb(0, 0, 0);
+  padding-bottom: 0.5px;
+}
+
+.header .cart_items_container .cart_item .content .price {
+  font-size: 2px;
+  color: rgb(0, 0, 0);
+}
+
+.header .cart_items_container .Checkout {
+  color: rgb(255, 255, 255);
+  background-color: #07d65f;
+  border-radius: 160px;
+  height: 40px;
+  width: 100%;
+  transition: linear;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+@media (max-width: 991px) {
+  .header {
+    padding: 20px 32px;
+  }
+}
+
+@media (max-width: 991px) {
+  #menu-btnn {
+    display: inline-block;
+  }
+
+  .header .navbar {
+    position: absolute;
+    top: 100%;
+    right: -100%;
+    background: rgb(245, 245, 245);
+    height: calc(100vh - 9.5px);
+    display: inline-block;
+    display: none;
+  }
+
+  .header .navbar a {
+    color: rgb(0, 0, 0);
+    display: block;
+    padding: 8px;
+    margin: 24px;
+    font-size: 16px;
+    color: rgb(245, 245, 245);
+    background-color: #07d65f;
+    border-radius: 25px;
+    transition: background-color 0.3s ease-in-out;
+    position: relative;
+    text-decoration: none;
+    text-align: center;
+  }
+
+  .header .navbar a:hover {
+    color: black;
+    background-color: rgb(245, 245, 245);
+  }
+
+  .header .navbar a::before {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 3px;
+    bottom: 0;
+    left: 0;
+    background-color: black;
+    transform: scaleX(0);
+    transform-origin: bottom right;
+    transition: transform 0.3s ease-in-out;
+  }
+
+  .header .navbar a:hover::before {
+    transform: scaleX(1);
+    transform-origin: bottom left;
+  }
+
+  .header .navbar.active {
+    display: block;
+    right: 0;
+  }
+
+  .header .search_form {
+    width: 90%;
+    right: 32px;
+  }
+}
+
+.bag {
+  align-items: center;
+  position: center;
+}
+
+.cart_items_container .bag_quantity {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 25px;
+  width: 25px;
+  color: white;
+  background: #07d65f;
+  border-radius: 50%;
+  padding: 16px;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+/* Additional styles for the updated class names */
+.header .icons .search_icon,
+.header .icons .cart_icon,
+.header .icons .menu_icon {
+  color: rgb(255, 255, 255);
+  cursor: pointer;
+  font-size: 16px;
+  margin-left: 30px;
+}
+
+.header .icons .search_icon:hover {
+  color: rgb(255, 255, 255);
+}
+
+.header .icons .cart_icon:hover {
+  color: rgb(255, 255, 255);
+}
+
+.header .icons .menu_icon:hover {
+  color: rgb(255, 255, 255);
+}

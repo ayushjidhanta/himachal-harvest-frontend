@@ -20,8 +20,8 @@ export default function App() {
         <Route exact path="/signup" element={<Signup />} />
         <Route exact path="/signin" element={<SignIn />} />
         <Route exact path="*" element={<NotFound/>} />
-        {/* <Route exact path="/about" element={<About />} />
-        <Route exact path="/cart" element={<Cart />} />
+         <Route exact path="/about" element={<About />} />
+        {/*<Route exact path="/cart" element={<Cart />} />
         <Route exact path="/explore" element={<Explore />} />
         <Route exact path="/checkout" element={<Checkout />} />
         <Route exact path="/privacy" element={<Privacy />} />

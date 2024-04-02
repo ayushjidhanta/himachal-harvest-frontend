@@ -7,17 +7,17 @@ export default function About() {
   const aboutPg_Images = [
     {
       url: "https://media.licdn.com/dms/image/D4D03AQGv54Pth4Uhxw/profile-displayphoto-shrink_800_800/0/1675616100963?e=1717632000&v=beta&t=CKciONiuwy7oryjGpLodoBrx6zBep5zD6_60y5IGsBo",
-      description: "Full Stack Developer - AI/ML, MERN",
+      description: "Software Developer 1 @Zenarate <Python_JavaScript_Flask_React JS /> / Co-Founder",
       data: "https://www.linkedin.com/in/bhupenderhere/",
     },
     {
       url: "https://media.licdn.com/dms/image/C4E03AQFdICQfSbjW5w/profile-displayphoto-shrink_800_800/0/1660232032438?e=1717632000&v=beta&t=4RUaa-rEd7A6Vgkaca3w6dkqg9bEmifSF6xzWm5wM-I",
-      description: "Full Stack Developer MERN/ Website Owner-Solutions2Coding",
+      description: "Full Stack Developer MERN / Website Founder-Solutions2Coding",
       data: "https://www.linkedin.com/in/abhishek11110/",
     },
     {
       url: "https://media.licdn.com/dms/image/D4D03AQFA-IqrPv8uLQ/profile-displayphoto-shrink_800_800/0/1685939319911?e=1717632000&v=beta&t=KM4a1MbEZfPpLhtH1BvgcLl4lMCLaJWdhQuqobjKnZU",
-      description: "Full Stack Developer MEAN",
+      description: "Software Developer 1 MEAN / Founder",
       data: "https://www.linkedin.com/in/ayush-chauhan-33786322b/",
     },
   ];

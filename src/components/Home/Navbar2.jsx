@@ -54,7 +54,7 @@ export default function Navbar2() {
   return (
     <div className={`${navStyle.header} ${isFixed ? navStyle.fixed : ""}`}>
       <nav className={navStyle.navbar} ref={navbarRef}>
-        <Link to="/home">Home</Link>
+        <Link to="/">Home</Link>
         <Link to="/about">About</Link>
         <Link to="/privacy">Privacy </Link>
         <Link to="/explore">Products </Link>

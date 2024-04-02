@@ -10,14 +10,14 @@
 }
 
 .image_box img {
-  width: 70%;
+  width: 50%;
   height: auto;
   object-fit: contain;
   border-right: 1px solid rgb(51, 241, 17);
 }
 
 .description {
-  width: 30%;
+  width: 50%;
   background-color: rgb(255, 255, 255);
   padding: 10px;
   border-radius: 0 0 5px 5px;
@@ -30,7 +30,7 @@
 
 .button {
   position: absolute;
-  bottom: 10px;
+  bottom: 107px;
   left: 50%;
   transform: translateX(-50%);
 }

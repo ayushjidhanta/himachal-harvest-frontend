@@ -1,10 +1,7 @@
 import React from "react";
 import Style from "./About.module.css";
-// import SliderAbout from "../Sliders/SliderAbout";
 import Navbar2 from "../Home/Navbar2";
 import Footer from "../../assets/Footer/Footer";
-import Contact1 from "../Contact1/Contact1";
-// import Contact from "../Contact/Contact";
 import ImageBox from "../../assets/ImageBox/ImageBox";
 export default function About() {
   const aboutPg_Images = [

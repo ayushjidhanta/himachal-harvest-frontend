@@ -1,16 +1,13 @@
 import React from 'react'
 import Navbar2 from '../Home/Navbar2'
 import Footer from '../../assets/Footer/Footer'
-// import "./privacy.css"
+import Styles from "./privacy.module.css"
 
 function privacy() {
   return (
     <>
    <Navbar2/>
-    <div className="margin-box">
-      <h1>Explore 2</h1>
-    </div>
-    <div className="privacy-policy">
+    <div className={Styles.privacy_policy}>
     <h1>Privacy Policy</h1>
 
     <p>
@@ -89,9 +86,7 @@ function privacy() {
       privacy practices, please contact us at:
     </p>
 
-    <p>Email: info@himachalharvest.com</p>
-
-    <p>Phone: 123-456-7890</p>
+    <p>Email: harvesthimachal@gmail.com</p>
   </div>
   <Footer/>
   </>

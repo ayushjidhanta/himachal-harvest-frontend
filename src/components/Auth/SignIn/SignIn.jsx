@@ -46,7 +46,7 @@ const SignIn = () => {
   };
 
   const checkRole = (Role) => {
-    if (Role.username == Roles.ADMIN) return true;
+    if (Role == Roles.ADMIN) return true;
     return false;
   };
 
@@ -64,7 +64,7 @@ const SignIn = () => {
 
     try {
       const response = await signIn(credentials);
-      const Role = JSON.parse(response.config.data);
+      const Role = response.data.role;
       if (response.data.user_authenticated && !checkRole(Role)) {
         showAlert(
           "We Are Sorry! Only Admins Can Login To The Application. Currently We are Declining New Users"

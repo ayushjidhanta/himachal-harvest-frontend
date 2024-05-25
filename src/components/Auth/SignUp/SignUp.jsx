@@ -20,6 +20,7 @@ const SignUp = () => {
 
   const [credentials, setCredentials] = useState({
     username: "",
+    email: "",
     password: "",
   });
 
@@ -35,6 +36,7 @@ const SignUp = () => {
   };
 
   const setName = (e) => credentialHandler("username", e.target.value);
+  const setEmail = (e) => credentialHandler("email", e.target.value);
   const setPassword = (e) => credentialHandler("password", e.target.value);
 
   const alertDialogHandler = (field, value) => {
@@ -102,6 +104,13 @@ const SignUp = () => {
               placeholder="Username"
               className={styles.input}
               onChange={setName}
+            />
+              <input
+              type="email"
+              value={credentials.email}
+              placeholder="Email"
+              className={styles.input}
+              onChange={setEmail}
             />
             <input
               type="password"

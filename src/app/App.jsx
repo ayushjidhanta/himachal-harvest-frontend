@@ -12,6 +12,7 @@ import SignIn from "../components/Auth/SignIn/SignIn";
 import Checkout from "../components/Checkout/checkout";
 import Privacy from "../components/PrivacyPolicy/privacy";
 import NotFound from "../assets/PageNotFound/PageNotFound";
+import ContactUs from "../components/ContactUs/ContactUs";
 export default function App() {
   return (
     <BrowserRouter>
@@ -20,13 +21,13 @@ export default function App() {
         <Route exact path="/signup" element={<Signup />} />
         <Route exact path="/signin" element={<SignIn />} />
         <Route exact path="*" element={<NotFound/>} />
-        {/* <Route exact path="/about" element={<About />} />
-        <Route exact path="/cart" element={<Cart />} />
-        <Route exact path="/explore" element={<Explore />} />
-        <Route exact path="/checkout" element={<Checkout />} />
+        <Route exact path="/about" element={<About />} />
+        <Route exact path="/contactus" element={<ContactUs />} />
         <Route exact path="/privacy" element={<Privacy />} />
-        <Route exact path="/review" element={<Review />} /> */}
-      
+        <Route exact path="/review" element={<Review />} />
+        {/*<Route exact path="/cart" element={<Cart />} />
+        <Route exact path="/explore" element={<Explore />} />
+        <Route exact path="/checkout" element={<Checkout />} />*/}
       </Routes>
     </BrowserRouter>
   );

@@ -1,0 +1,35 @@
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.title {
+    text-align: center;
+    padding: 20px 0;
+  }
+  
+  .title h1 {
+    font-size: 36px;
+    color: #2ecc71;
+  }
+  
+
+.main_content {
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    
+}
+
+.main_content h2 {
+    color: #2ecc71;
+    margin-bottom: 20px; 
+}
+
+.main_content p {
+    color: #555;
+    line-height: 1.6;
+    margin-bottom: 20px; 
+}

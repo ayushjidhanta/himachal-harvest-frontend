@@ -24,7 +24,7 @@ function Review() {
         try {
             setSpinner(true);
             const response = await Reviews(apiActions.GET);
-            if (response.status == responseStatus.SUCCESS) {
+            if (response.status === responseStatus.SUCCESS) {
                 setReviews(response.data.reviews);
                 setSpinner(false);
             }
@@ -54,8 +54,8 @@ function Review() {
                 date: newReview.reviewDate.toLocaleDateString()
             };
             const response = await Reviews(apiActions.POST, newReview);
-            debugger;
-            if (response.status == responseStatus.SUCCESS) {
+             
+            if (response.status === responseStatus.SUCCESS) {
                 setReviews([...reviews, persistData]);
                 showAlert(
                     "Review Sent Successfully"

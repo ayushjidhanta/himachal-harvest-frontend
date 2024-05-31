@@ -2,6 +2,7 @@ import React from "react";
 import styles from "./Footer.module.css";
 import { Icons } from "../Icons/Icons";
 import PrimaryButton from "../Button/PrimaryButton/PrimaryButton";
+import { Link } from 'react-router-dom';
 
 function Footer() {
   // Social Icons
@@ -13,7 +14,11 @@ function Footer() {
     github: "https://www.github.com/",
     google: "https://www.google.com/",
   };
-
+    const companyLinks = [
+        { name: "About Us", path: "/about" },
+        { name: "Contact Us", path: "/contactUs" },
+        { name: "Careers", path: "/" }
+    ];
   return (
     <footer className={styles.footer}>
       <section className={styles.social_icons}>
@@ -35,17 +40,15 @@ function Footer() {
       <section className={styles.links}>
         <div className={styles.column}>
           <h3>Company</h3>
-          <ul>
-            {["About Us", "Contact Us", "Careers"].map((item, index) => {
-              return (
-                <li>
-                  <a href="/" key={item}>
-                    {item}
-                  </a>
-                </li>
-              );
-            })}
-          </ul>
+                  <ul>
+                      {companyLinks.map((link, index) => (
+                          <li key={index}>
+                              <Link to={link.path}>
+                                  {link.name}
+                              </Link>
+                          </li>
+                      ))}
+                  </ul>
         </div>
         <div className={styles.column}>
           <h3>Support</h3>

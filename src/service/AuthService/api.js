@@ -19,6 +19,8 @@ export const signIn = async (data) => {
   try {
     return await axios.post(`${API_URL}/auth/signin`, data);
   } catch (error) {
+    console.log(error)
     return error;
   }
 };
+

@@ -1,0 +1,26 @@
+.contact_container {
+    margin-top: 10px;
+    display: flex;
+    justify-content: center; 
+    align-items: center; 
+    height: 400px; 
+    width: auto; 
+    background: linear-gradient(150deg, #c2f6d8 19.52%, #2dcb72 84.22%);
+    /* background-image: url('https://img.freepik.com/free-photo/top-view-blue-monday-concept-composition-with-telephone_23-2149139104.jpg?w=996'); */
+    background-size: cover; 
+    background-position: center; 
+    background-repeat: no-repeat; 
+    margin-top: 10px;
+  }
+  
+  .contact_button, .call_button {
+    min-width: 200px;
+    padding: 10px 20px;
+  }
+  
+  .contact_button:hover, .call_button:hover {
+    opacity: 0.8; 
+  }
+  
+  
+  

@@ -1,5 +1,5 @@
 // Inbuilt React Packages
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import styles from "./SignIn.module.css";
 import { useNavigate } from "react-router";
 import Roles from "../../../enum/Roles";
@@ -8,14 +8,17 @@ import { signIn } from "../../../service/AuthService/api";
 
 // Components & Assets include:
 import { Icons } from "../../../assets/Icons/Icons";
-import Spinner from "../../../assets/Spinner/Spinner";
 import AlertDialog from "../../../assets/AlertDialog/AlertDialog";
 import PrimaryButton from "../../../assets/Button/PrimaryButton/PrimaryButton";
 import SecondaryButton from "../../../assets/Button/SecondaryButton/SecondaryButton";
 import { SpinnerHimachalHarvest } from "../../../assets/Spinner/Spinner";
 
+// contextAPI
+import { AuthContext } from "../../../context/auth-context";
+
 const SignIn = () => {
   const navigate = useNavigate();
+  const auth = useContext(AuthContext);
 
   const [credentials, setCredentials] = useState({
     username: "",
@@ -44,13 +47,8 @@ const SignIn = () => {
     alertDialogHandler("isOpen", true);
     alertDialogHandler("message", message);
   };
-
-  const checkRole = (Role) => {
-    if (Role == Roles.ADMIN) return true;
-    return false;
-  };
-
   const authHandler = async (e) => {
+     
     if (!credentials.username || !credentials.password) {
       showAlert(
         !credentials.username
@@ -61,22 +59,23 @@ const SignIn = () => {
     }
 
     setSpinner(true);
-
     try {
       const response = await signIn(credentials);
-      const Role = response.data.role;
-      if (response.data.user_authenticated && !checkRole(Role)) {
-        showAlert(
-          "We Are Sorry! Only Admins Can Login To The Application. Currently We are Declining New Users"
-        );
-        setSpinner(false);
-        return;
-      }
+      // if (response.data.user_authenticated && !checkRole(Role)) {
+      //   showAlert(
+      //     "We Are Sorry! Only Admins Can Login To The Application. Currently We are Declining New Users"
+      //   );
+      //   setSpinner(false);
+      //   return;
+      // }
 
       if (response.data.user_authenticated) {
+        const role = (response.data.role).toLowerCase();
         setSpinner(false);
         credentialHandler("username", "");
         credentialHandler("password", "");
+        localStorage.setItem("role", role);
+        auth.login(role);
         showAlert(response.data.message);
         setTimeout(() => {
           navigate("/");

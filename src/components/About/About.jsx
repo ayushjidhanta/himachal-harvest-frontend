@@ -28,8 +28,8 @@ export default function About() {
         <h1>About Us</h1>
       </div>
 
-      <div class={Style.container}>
-        <div class={Style.main_content}>
+      <div className={Style.container}>
+        <div className={Style.main_content}>
           <h2>Our Story</h2>
           <p>
             At Himachal Harvest, we're passionate about bringing the freshest

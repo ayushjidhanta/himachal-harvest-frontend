@@ -7,6 +7,8 @@ import Footer from "../../assets/Footer/Footer";
 import { uploadForm } from "../../service/GeneralService/api";
 import AlertDialog from "../../assets/AlertDialog/AlertDialog";
 import { SpinnerHimachalHarvest } from "../../assets/Spinner/Spinner";
+import responseStatus from "../../enum/responseStatus";
+
 function ContactUs() {
   const formRef = useRef(null);
   const [spinner, setSpinner] = useState(false);
@@ -34,14 +36,16 @@ function ContactUs() {
     try {
       debugger;
       const response = await uploadForm(formData);
+      if (response.status === responseStatus.CREATED) {
+        showAlert(
+          "Message Sent Successfully"
+        );
+      }
     }
     catch{
       console.error("caught Error ");
     }
     setSpinner(false);
-    showAlert(
-      "Message Sent Successfully"
-    );
   };
 
   return (

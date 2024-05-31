@@ -10,7 +10,6 @@ export const getProducts = () => async (dispatch) => {
 
     dispatch({ type: actionType.GET_PRODUCTS_SUCCESS, payload: data })
   } catch (error) {
-    debugger;
     dispatch({
       type: actionType.GET_PRODUCTS_FAIL,
       payload: error.message,

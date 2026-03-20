@@ -1,61 +1,316 @@
-/* checkout.css */
+/* Checkout page: compact, modern, internal scroll */
 
-.Secion_1 {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
+.checkoutShell {
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  background: #f4f6f7;
+}
+
+.checkoutContainer {
+  width: min(1100px, calc(100% - 2rem));
+  margin: 0 auto;
+}
+
+.checkoutHeader {
+  background: rgba(255, 255, 255, 0.95);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.checkoutHeaderInner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 0;
+}
+
+.checkoutBack {
+  background: transparent;
+  border: 1px solid rgba(0, 0, 0, 0.14);
+  padding: 0.55rem 0.85rem;
+  border-radius: 999px;
+  cursor: pointer;
+  font-weight: 800;
+  color: #111;
+}
+
+.checkoutBack:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.checkoutTitle {
+  margin: 0;
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: #111;
+  text-align: right;
+}
+
+.checkoutSubtitle {
+  text-align: right;
+  color: #555;
+  margin-top: 0.25rem;
+  font-size: 0.95rem;
+}
+
+.checkoutBody {
+  flex: 1 1 auto;
+  overflow: hidden;
+}
+
+.checkoutScroll {
+  height: 100%;
+  overflow-y: auto;
+  padding: 1rem 0 2rem;
+}
+
+.checkoutGrid {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: 1rem;
+  align-items: start;
+}
+
+@media (max-width: 980px) {
+  .checkoutGrid {
+    grid-template-columns: 1fr;
   }
-  
-  .Section1_wrap {
-    background-color: #f2f2f2;
-    padding: 20px;
-    border-radius: 5px;
-    width: 600px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.checkoutCard {
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 16px;
+  padding: 1rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+}
+
+.checkoutCardTitle {
+  font-weight: 900;
+  font-size: 1.05rem;
+  margin-bottom: 0.75rem;
+}
+
+.checkoutForm {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.checkoutRow2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.checkoutRow3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0.75rem;
+}
+
+@media (max-width: 700px) {
+  .checkoutRow2,
+  .checkoutRow3 {
+    grid-template-columns: 1fr;
   }
-  
-  h2 {
-    margin-bottom: 20px;
-    font-size: 1.5rem;
+
+  .checkoutTitle,
+  .checkoutSubtitle {
+    text-align: left;
   }
-  
-  .form-label {
-    font-weight: bold;
-  }
-  
-  .btn-primary {
-    width: 100%;
-    font-size: 1.2rem;
-  }
-  
-  /* Additional styling for better visual appearance */
-  .row.g-3 {
-    margin-bottom: 15px;
-  }
-  
-  .input-group {
-    margin-bottom: 15px;
-  }
-  
-  .input-group-text {
-    background-color: #f2f2f2;
-  }
-  
-  .form-control:focus {
-    box-shadow: none;
-  }
-  
-  .checkbox-label {
-    padding-left: 0;
-  }
-  
-  .form-control {
-    font-size: 1.2rem;
-  }
-  
-  .select-control {
-    font-size: 1.2rem;
-    padding: 0.5rem;
-  }
-  
+}
+
+.checkoutField {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.checkoutField label {
+  color: #222;
+  font-size: 0.9rem;
+}
+
+.checkoutField input,
+.checkoutField select {
+  padding: 0.75rem 0.85rem;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  outline: none;
+  font-size: 1rem;
+  background: #fff;
+}
+
+.checkoutField input:focus,
+.checkoutField select:focus {
+  border-color: rgba(33, 150, 83, 0.8);
+  box-shadow: 0 0 0 4px rgba(33, 150, 83, 0.15);
+}
+
+.checkoutBtnPrimary {
+  width: 100%;
+  border: none;
+  border-radius: 12px;
+  padding: 0.8rem 0.95rem;
+  cursor: pointer;
+  font-weight: 900;
+  background: #219653;
+  color: #fff;
+}
+
+.checkoutBtnPrimary:hover {
+  filter: brightness(0.95);
+}
+
+.checkoutBtnPrimary:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.checkoutBtnSecondary {
+  border: none;
+  border-radius: 12px;
+  padding: 0.8rem 0.95rem;
+  cursor: pointer;
+  font-weight: 900;
+  background: #111;
+  color: #fff;
+}
+
+.checkoutBtnSecondary:hover {
+  filter: brightness(1.1);
+}
+
+.checkoutError {
+  background: rgba(209, 61, 61, 0.12);
+  border: 1px solid rgba(209, 61, 61, 0.25);
+  color: #7a0b0b;
+  padding: 0.75rem 0.9rem;
+  border-radius: 12px;
+}
+
+.checkoutSummary {
+  position: sticky;
+  top: 1rem;
+}
+
+.checkoutSummaryList {
+  display: grid;
+  gap: 0.65rem;
+  max-height: 340px;
+  overflow: auto;
+  padding-right: 0.25rem;
+}
+
+.checkoutSummaryItem {
+  display: grid;
+  grid-template-columns: 56px 1fr auto;
+  gap: 0.65rem;
+  align-items: center;
+  padding: 0.55rem;
+  border-radius: 12px;
+  background: #f7f7f7;
+}
+
+.checkoutSummaryItem img {
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+  background: #fff;
+  border-radius: 10px;
+}
+
+.checkoutSummaryInfo {
+  min-width: 0;
+}
+
+.checkoutSummaryTitle {
+  font-weight: 900;
+  color: #111;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.checkoutSummaryMeta {
+  color: #555;
+  font-size: 0.85rem;
+  margin-top: 0.15rem;
+}
+
+.checkoutSummaryPrice {
+  font-weight: 900;
+  color: #111;
+}
+
+.checkoutDivider {
+  height: 1px;
+  background: rgba(0, 0, 0, 0.08);
+  margin: 0.8rem 0;
+}
+
+.checkoutTotals {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.checkoutTotalsRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.checkoutTotalsTotal {
+  font-weight: 900;
+  color: #111;
+}
+
+.checkoutEmpty,
+.checkoutSuccess {
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 16px;
+  padding: 2rem;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+}
+
+.checkoutSuccess h2 {
+  margin: 0 0 0.5rem;
+}
+
+.checkoutOrderId {
+  font-weight: 900;
+}
+
+.checkoutActionsRow {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+}
+
+.checkoutFooter {
+  flex: 0 0 auto;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  background: #fff;
+}
+
+/* Compact footer for this page only */
+.checkoutFooter footer > section {
+  display: none;
+}
+
+.checkoutFooter footer > section:last-child {
+  display: flex;
+  padding: 0.75rem 0;
+  background: #fff;
+}
+
+.checkoutFooter footer > section:last-child p {
+  margin: 0;
+  color: #111;
+  font-size: 0.9rem;
+}

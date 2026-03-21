@@ -1,4 +1,238 @@
-.margin-box{
-    height: 6.5rem;
-    background-color: rgb(255, 255, 255);
+/* Product page layout: header + footer fixed, product grid scrolls */
+
+.exploreShell {
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  background: #f4f6f7;
+}
+
+.exploreHeader {
+  background: rgba(255, 255, 255, 0.95);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.exploreContainer {
+  width: min(1200px, calc(100% - 2rem));
+  margin: 0 auto;
+}
+
+.exploreHeaderInner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 0;
+}
+
+.exploreTitle {
+  margin: 0;
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: #111;
+}
+
+.exploreCount {
+  color: #555;
+  margin-top: 0.25rem;
+  font-size: 0.95rem;
+}
+
+.exploreSearch {
+  width: min(420px, 100%);
+}
+
+.exploreSearch input {
+  width: 100%;
+  padding: 0.75rem 0.95rem;
+  border-radius: 999px;
+  border: 1px solid rgba(0, 0, 0, 0.18);
+  outline: none;
+  background: #fff;
+  font-size: 1rem;
+}
+
+.exploreSearch input:focus {
+  border-color: rgba(33, 150, 83, 0.8);
+  box-shadow: 0 0 0 4px rgba(33, 150, 83, 0.15);
+}
+
+.exploreBody {
+  flex: 1 1 auto;
+  overflow: hidden;
+}
+
+.exploreScroll {
+  height: 100%;
+  overflow-y: auto;
+  padding: 1rem 0 2rem;
+}
+
+.exploreAlert {
+  background: rgba(209, 61, 61, 0.12);
+  border: 1px solid rgba(209, 61, 61, 0.25);
+  color: #7a0b0b;
+  padding: 0.75rem 0.9rem;
+  border-radius: 12px;
+  margin-bottom: 1rem;
+}
+
+.exploreEmpty {
+  padding: 2rem 0;
+  text-align: center;
+  color: #333;
+}
+
+.productGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+.productCard {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 16px;
+  padding: 0.9rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+  display: flex;
+  flex-direction: column;
+  min-height: 320px;
+}
+
+.productImageWrap {
+  background: #f7f7f7;
+  border-radius: 12px;
+  height: 160px;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+
+.productImage {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.productTitle {
+  margin: 0.75rem 0 0.35rem;
+  font-weight: 900;
+  font-size: 1.05rem;
+  color: #111;
+}
+
+.productPriceRow {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.45rem;
+}
+
+.productPrice {
+  font-weight: 900;
+  color: #111;
+}
+
+.productMrp {
+  color: #777;
+  text-decoration: line-through;
+  font-size: 0.9rem;
+}
+
+.productBadge {
+  background: #219653;
+  color: #fff;
+  border-radius: 999px;
+  padding: 0.18rem 0.55rem;
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+
+.productDesc {
+  color: #333;
+  font-size: 0.92rem;
+  line-height: 1.25rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin: 0;
+}
+
+.productSeller {
+  margin-top: 0.5rem;
+  color: #666;
+  font-size: 0.82rem;
+}
+
+.productActions {
+  display: flex;
+  gap: 0.6rem;
+  margin-top: auto;
+  padding-top: 0.9rem;
+}
+
+.productBtn {
+  flex: 1;
+  border: none;
+  border-radius: 12px;
+  padding: 0.7rem 0.8rem;
+  cursor: pointer;
+  font-weight: 900;
+  letter-spacing: 0.2px;
+}
+
+.productBtnPrimary {
+  background: #219653;
+  color: #fff;
+}
+
+.productBtnPrimary:hover {
+  filter: brightness(0.95);
+}
+
+.productBtnSecondary {
+  background: #111;
+  color: #fff;
+}
+
+.productBtnSecondary:hover {
+  filter: brightness(1.1);
+}
+
+.exploreFooter {
+  flex: 0 0 auto;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  background: #fff;
+}
+
+/* Make footer compact for the product page only */
+.exploreFooter footer {
+  margin: 0;
+}
+
+.exploreFooter footer > section {
+  display: none;
+}
+
+.exploreFooter footer > section:last-child {
+  display: flex;
+  padding: 0.75rem 0;
+  background: #fff;
+}
+
+.exploreFooter footer > section:last-child p {
+  margin: 0;
+  color: #111;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 768px) {
+  .exploreHeaderInner {
+    flex-direction: column;
+    align-items: stretch;
+  }
 }

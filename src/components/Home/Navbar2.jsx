@@ -28,6 +28,22 @@ export default function Navbar2() {
     navigate("/cart");
   };
 
+  const handleLogout = () => {
+    try {
+      localStorage.removeItem("role");
+      localStorage.removeItem("persist:root");
+    } catch {}
+
+    auth?.logout?.();
+
+    searchRef?.current?.classList?.remove(navStyle.active);
+    navbarRef?.current?.classList?.remove(navStyle.active);
+    cartItemRef?.current?.classList?.remove(navStyle.active);
+    adminRef?.current?.classList?.remove(navStyle.active);
+
+    navigate("/signin");
+  };
+
   const searchRef = useRef(null);
   const navbarRef = useRef(null);
   const cartItemRef = useRef(null);
@@ -73,6 +89,12 @@ export default function Navbar2() {
         <Link to="/privacy">Privacy</Link>
         <Link to="/explore">Products</Link>
         <Link to="/review">Review</Link>
+        <Link to="/my-orders">My Orders</Link>
+        {(auth.isUserLoggedIn || auth.isAdminLoggedIn) && (
+          <button type="button" className={navStyle.logoutBtn} onClick={handleLogout}>
+            Logout
+          </button>
+        )}
       </nav>
 
       <div className={navStyle.icons}>
@@ -125,8 +147,9 @@ export default function Navbar2() {
       </div>
 
       <div className={navStyle.ADMIN} ref={adminRef}>
-        <Link to="/">ADMIN FIRST PAGE</Link>
-        <Link to="/">ADMIN SECOND PAGE</Link>
+        <Link to="/admin">Add Product</Link>
+        <Link to="/admin/manage-products">Manage Products</Link>
+        <Link to="/admin/orders">Orders</Link>
       </div>
     </div>
   );

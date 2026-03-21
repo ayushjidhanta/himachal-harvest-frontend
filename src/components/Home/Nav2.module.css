@@ -368,3 +368,20 @@ header .search_form input {
             color: #fff;
             border-color: #2ecc71;
         }
+
+
+.logoutBtn {
+    margin: 0 16px;
+    font-size: 16px;
+    color: rgb(255, 255, 255);
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    padding: 8px 12px;
+    border-radius: 999px;
+    cursor: pointer;
+}
+
+.logoutBtn:hover {
+    color: black;
+    background: rgb(255, 255, 255);
+}

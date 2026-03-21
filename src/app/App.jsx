@@ -15,6 +15,10 @@ import { AuthContext } from "../context/auth-context";
 import SignUp from "../components/Auth/SignUp/SignUp";
 import Roles from "../enum/Roles";
 import ContactUs from "../components/ContactUs/ContactUs";
+import MyOrders from "../components/Orders/MyOrders";
+import AdminFirstPage from "../components/Admin/AdminFirstPage";
+import ManageProducts from "../components/Admin/ManageProducts";
+import AdminOrders from "../components/Admin/AdminOrders";
 
 export default function App() {
   const [isUserLoggedIn, setisUserLoggedIn] = useState();
@@ -29,7 +33,14 @@ export default function App() {
     }
   }, []);
 
-  const logout = () => {};
+  const logout = useCallback(() => {
+    try {
+      localStorage.removeItem("role");
+      localStorage.removeItem("persist:root");
+    } catch {}
+    setisUserLoggedIn(undefined);
+    setisAdminLoggedIn(undefined);
+  }, []);
 
   useEffect(() => {
     const getLoggedInfo = localStorage.getItem("role");
@@ -50,9 +61,13 @@ export default function App() {
         <Route exact path="/cart" element={<Cart />} />
         <Route exact path="/explore" element={<Explore />} />
         <Route exact path="/checkout" element={<Checkout />} />
+        <Route exact path="/my-orders" element={<MyOrders />} />
         <Route exact path="/privacy" element={<Privacy />} />
         <Route exact path="/review" element={<Review />} />
         <Route exact path="/contactUs" element={<ContactUs/>}/>
+        <Route exact path="/admin" element={<AdminFirstPage />} />
+        <Route exact path="/admin/manage-products" element={<ManageProducts />} />
+        <Route exact path="/admin/orders" element={<AdminOrders />} />
       </Routes>
     );
   } else if (!isUserLoggedIn) {

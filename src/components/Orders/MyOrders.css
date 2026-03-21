@@ -1,0 +1,239 @@
+/* My Orders page: user order tracking */
+
+.myOrdersShell {
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  background: #f4f6f7;
+}
+
+.myOrdersContainer {
+  width: min(1100px, calc(100% - 2rem));
+  margin: 0 auto;
+}
+
+.myOrdersHeader {
+  background: rgba(255, 255, 255, 0.95);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.myOrdersHeaderInner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 0;
+  flex-wrap: wrap;
+}
+
+.myOrdersTitle {
+  margin: 0;
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: #111;
+}
+
+.myOrdersSub {
+  margin-top: 0.25rem;
+  color: #555;
+  font-size: 0.95rem;
+}
+
+.myOrdersBody {
+  flex: 1 1 auto;
+  overflow: hidden;
+}
+
+.myOrdersScroll {
+  height: 100%;
+  overflow-y: auto;
+  padding: 1rem 0 2rem;
+}
+
+.card {
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 16px;
+  padding: 1rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+}
+
+.controls {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.input {
+  width: min(520px, 100%);
+  padding: 0.75rem 0.95rem;
+  border-radius: 999px;
+  border: 1px solid rgba(0, 0, 0, 0.18);
+  outline: none;
+  background: #fff;
+  font-size: 1rem;
+}
+
+.btn {
+  border: none;
+  border-radius: 12px;
+  padding: 0.75rem 0.9rem;
+  cursor: pointer;
+  font-weight: 900;
+}
+
+.btnPrimary {
+  background: #219653;
+  color: #fff;
+}
+
+.btnSecondary {
+  background: #111;
+  color: #fff;
+}
+
+.alert {
+  background: rgba(209, 61, 61, 0.12);
+  border: 1px solid rgba(209, 61, 61, 0.25);
+  color: #7a0b0b;
+  padding: 0.75rem 0.9rem;
+  border-radius: 12px;
+  margin-top: 1rem;
+}
+
+.grid {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.orderCard {
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 16px;
+  padding: 1rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+}
+
+.topRow {
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.orderId {
+  font-weight: 900;
+  color: #111;
+}
+
+.meta {
+  color: #555;
+  font-size: 0.9rem;
+  margin-top: 0.25rem;
+}
+
+.badges {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 900;
+  background: rgba(0, 0, 0, 0.06);
+}
+
+.status {
+  background: rgba(33, 150, 83, 0.12);
+  border: 1px solid rgba(33, 150, 83, 0.22);
+  color: #0d4b27;
+}
+
+.statusCancelled {
+  background: rgba(209, 61, 61, 0.12);
+  border: 1px solid rgba(209, 61, 61, 0.25);
+  color: #7a0b0b;
+}
+
+.progress {
+  margin-top: 0.9rem;
+  display: grid;
+  gap: 0.45rem;
+}
+
+.progressRow {
+  display: flex;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+}
+
+.step {
+  font-size: 0.78rem;
+  font-weight: 900;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  background: #fff;
+  color: #333;
+}
+
+.stepActive {
+  background: #111;
+  border-color: #111;
+  color: #fff;
+}
+
+.stepDone {
+  background: rgba(33, 150, 83, 0.12);
+  border-color: rgba(33, 150, 83, 0.22);
+  color: #0d4b27;
+}
+
+.details {
+  margin-top: 0.9rem;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.detailsTitle {
+  font-weight: 900;
+}
+
+.link {
+  color: #111;
+  text-decoration: underline;
+  font-weight: 800;
+}
+
+.footer {
+  flex: 0 0 auto;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  background: #fff;
+}
+
+/* Compact footer for this page only */
+.footer footer > section {
+  display: none;
+}
+
+.footer footer > section:last-child {
+  display: flex;
+  padding: 0.75rem 0;
+  background: #fff;
+}
+
+.footer footer > section:last-child p {
+  margin: 0;
+  color: #111;
+  font-size: 0.9rem;
+}

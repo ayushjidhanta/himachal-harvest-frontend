@@ -1,78 +1,255 @@
-.review_header {
-    text-align: center;
-    margin: 50px;
+.page {
+  min-height: 100dvh;
+  background: linear-gradient(180deg, #f3fff7 0%, #ffffff 42%, #f6fbff 100%);
 }
 
-.main_heading {
-    font-size: 24px;
-    margin-bottom: 10px;
+.hero {
+  position: relative;
+  padding: clamp(28px, 5vw, 64px) 16px;
+  overflow: hidden;
 }
 
-.sub_heading {
-    font-size: 18px;
-    margin-bottom: 20px;
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(900px 280px at 20% 20%, rgba(33, 150, 83, 0.30) 0%, rgba(33, 150, 83, 0.00) 55%),
+    radial-gradient(900px 280px at 80% 10%, rgba(7, 214, 95, 0.22) 0%, rgba(7, 214, 95, 0.00) 55%),
+    linear-gradient(135deg, rgba(7, 214, 95, 0.16) 0%, rgba(33, 150, 83, 0.10) 45%, rgba(255, 255, 255, 0.0) 100%);
+  pointer-events: none;
 }
 
-.open_modal_btn {
-    background-color: #17a2b8;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    cursor: pointer;
-    font-size: 16px;
+.heroInner {
+  position: relative;
+  width: min(1100px, 100%);
+  margin: 0 auto;
+  padding: clamp(18px, 3vw, 28px);
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.70);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 22px 55px rgba(0, 0, 0, 0.10);
 }
 
-.open_modal_btn:hover {
-    background-color: #138496;
+.title {
+  margin: 0 0 10px 0;
+  font-size: clamp(28px, 2.6vw, 40px);
+  color: #0b3d1e;
+  letter-spacing: 0.2px;
 }
 
-.review_container {
-    display: flex;
-    flex-direction: row;
-    align-items: flex-start;
-    justify-content: space-between;
-    padding: 20px;
-    border: 1px solid #ccc;
-    margin-bottom: 10px;
-    gap: 20px;
+.subtitle {
+  margin: 0 0 14px 0;
+  color: rgba(18, 48, 29, 0.80);
+  font-size: 16px;
+  line-height: 1.6;
+  max-width: 80ch;
 }
 
-.review_details {
-    flex: 1;
-    overflow-wrap: break-word;
+.metaRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 14px;
 }
 
-.review_photo {
-    flex-shrink: 0;
-    text-align: center;
+.metaPill {
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(33, 150, 83, 0.10);
+  border: 1px solid rgba(33, 150, 83, 0.18);
+  color: rgba(18, 48, 29, 0.78);
+  font-size: 13px;
+  font-weight: 900;
 }
 
-.review_photo img {
-    max-width: 100px;
-    height: auto;
-    border-radius: 50%;
+.metaPillAdmin {
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(0, 0, 0, 0.10);
+  color: rgba(18, 48, 29, 0.72);
+  font-size: 13px;
+  font-weight: 900;
 }
 
-@media (min-width: 768px) {
-    .review_photo img {
-        max-width: 150px;
-    }
+.ctaRow {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
 }
 
-.review_title {
-    font-size: 24px;
-    font-weight: bold;
-    margin-bottom: 10px;
+.secondaryBtn {
+  height: 44px;
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(0, 0, 0, 0.10);
+  color: rgba(18, 48, 29, 0.82);
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 900;
 }
 
-.review_description {
-    font-size: 16px;
-    line-height: 1.5;
-    margin-bottom: 10px;
-    word-break: break-word;
+.secondaryBtn:hover {
+  background: rgba(255, 255, 255, 0.22);
 }
 
-.review_date {
-    font-size: 14px;
-    color: #999;
+.container {
+  width: min(1100px, 100%);
+  margin: 0 auto;
+  padding: 0 16px clamp(36px, 5vw, 64px) 16px;
+}
+
+.emptyCard {
+  margin-top: 18px;
+  padding: 22px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 18px 46px rgba(0, 0, 0, 0.10);
+}
+
+.emptyTitle {
+  font-weight: 900;
+  color: #0b3d1e;
+  font-size: 18px;
+  margin-bottom: 6px;
+}
+
+.emptySub {
+  color: rgba(18, 48, 29, 0.78);
+  line-height: 1.6;
+}
+
+.emptyActions {
+  margin-top: 14px;
+}
+
+.grid {
+  margin-top: 18px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.card {
+  padding: 16px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  min-height: 160px;
+}
+
+.cardTop {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  color: rgba(11, 61, 30, 0.78);
+  background: radial-gradient(160px 90px at 20% 20%, rgba(33, 150, 83, 0.25) 0%, rgba(33, 150, 83, 0.05) 60%);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  flex: 0 0 auto;
+}
+
+.cardHead {
+  flex: 1;
+  min-width: 0;
+}
+
+.cardName {
+  font-weight: 900;
+  color: #0b3d1e;
+  letter-spacing: 0.2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cardDate {
+  color: rgba(18, 48, 29, 0.60);
+  font-weight: 800;
+  font-size: 12px;
+  margin-top: 2px;
+}
+
+.deleteBtn {
+  height: 36px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(0, 0, 0, 0.10);
+  background: rgba(0, 0, 0, 0.04);
+  cursor: pointer;
+  font-weight: 900;
+  color: rgba(18, 48, 29, 0.72);
+}
+
+.deleteBtn:hover {
+  background: rgba(0, 0, 0, 0.07);
+}
+
+.deleteBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.cardBody {
+  margin-top: 12px;
+  position: relative;
+  flex: 1;
+}
+
+.quoteMark {
+  position: absolute;
+  top: -10px;
+  left: 0;
+  font-size: 44px;
+  line-height: 1;
+  color: rgba(33, 150, 83, 0.18);
+  font-weight: 900;
+}
+
+.cardText {
+  margin: 0;
+  color: rgba(18, 48, 29, 0.82);
+  line-height: 1.7;
+  word-break: break-word;
+  padding-left: 10px;
+}
+
+.starsRow {
+  margin: 6px 0 8px 10px;
+  color: rgba(11, 107, 51, 0.92);
+  font-weight: 900;
+  letter-spacing: 1px;
+}
+
+.starsOff {
+  color: rgba(0, 0, 0, 0.14);
+}
+
+@media (max-width: 1000px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
 }

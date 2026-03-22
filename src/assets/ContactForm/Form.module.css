@@ -1,11 +1,12 @@
 .form_container {
-    max-width: 400px;
-    margin: 0 auto;
-    padding: 20px;
-    background-color: #ffffff; 
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); 
-    margin-top: 40px;
+    width: 100%;
+    max-width: 680px;
+    margin: 14px auto 0 auto;
+    padding: 18px;
+    background-color: rgba(255, 255, 255, 0.65);
+    border-radius: 18px;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.08);
   }
   
   .form_group {
@@ -15,20 +16,28 @@
   .label {
     display: block;
     margin-bottom: 5px;
-    font-weight: bold;
-    color: #4caf50; 
+    font-weight: 800;
+    color: rgba(11, 61, 30, 0.84);
   }
   
   .input {
     width: 100%;
     padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+    border: 1px solid rgba(0, 0, 0, 0.14);
+    border-radius: 12px;
     font-size: 16px;
     color: #333;
+    background: rgba(255, 255, 255, 0.95);
+    outline: none;
+  }
+
+  .input:focus {
+    border-color: rgba(33, 150, 83, 0.55);
+    box-shadow: 0 0 0 4px rgba(33, 150, 83, 0.16);
   }
   
-  .textarea {
+  .inputTextarea {
+    min-height: 140px;
     resize: vertical;
   }
 

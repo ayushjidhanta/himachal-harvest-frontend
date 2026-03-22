@@ -13,24 +13,27 @@ import NotFound from "../assets/PageNotFound/PageNotFound";
 import { useCallback, useEffect, useState } from "react";
 import { AuthContext } from "../context/auth-context";
 import SignUp from "../components/Auth/SignUp/SignUp";
-import Roles from "../enum/Roles";
 import ContactUs from "../components/ContactUs/ContactUs";
 import MyOrders from "../components/Orders/MyOrders";
+import TrackOrder from "../components/Orders/TrackOrder";
+import LiveTracking from "../components/Orders/LiveTracking";
 import AdminFirstPage from "../components/Admin/AdminFirstPage";
 import ManageProducts from "../components/Admin/ManageProducts";
 import AdminOrders from "../components/Admin/AdminOrders";
+import AdminDelivery from "../components/Admin/AdminDelivery";
+import DeliveryPartner from "../components/Delivery/DeliveryPartner";
+import PartnerDashboard from "../components/Partner/PartnerDashboard";
+import AdminUsers from "../components/Admin/AdminUsers";
+import { clearAuthUser, getAuthUser } from "../service/authUser";
 
 export default function App() {
-  const [isUserLoggedIn, setisUserLoggedIn] = useState();
-  const [isAdminLoggedIn, setisAdminLoggedIn] = useState();
+  const [role, setRole] = useState("");
+  const [user, setUser] = useState(null);
 
-  const login = useCallback(async (role) => {
-    const getLoggedInfo = localStorage.getItem("role");
-    if (getLoggedInfo === Roles.ADMIN.toLowerCase()) {
-      setisAdminLoggedIn(getLoggedInfo);
-    } else {
-      setisUserLoggedIn(getLoggedInfo);
-    }
+  const login = useCallback((nextRole, nextUser) => {
+    const r = String(nextRole || localStorage.getItem("role") || "").toLowerCase();
+    setRole(r);
+    setUser(nextUser || getAuthUser());
   }, []);
 
   const logout = useCallback(() => {
@@ -38,21 +41,21 @@ export default function App() {
       localStorage.removeItem("role");
       localStorage.removeItem("persist:root");
     } catch {}
-    setisUserLoggedIn(undefined);
-    setisAdminLoggedIn(undefined);
+    clearAuthUser();
+    setRole("");
+    setUser(null);
   }, []);
 
   useEffect(() => {
-    const getLoggedInfo = localStorage.getItem("role");
-    if (getLoggedInfo) {
-      login(getLoggedInfo);
-    } else {
-      login(getLoggedInfo);
-    }
-  }, [isUserLoggedIn, login, isAdminLoggedIn]);
+    login();
+  }, [login]);
+
+  const isAdminLoggedIn = role === "admin";
+  const isPartnerLoggedIn = role === "partner";
+  const isUserLoggedIn = role === "user";
 
   let routes;
-  if (isUserLoggedIn || isAdminLoggedIn) {
+  if (isAdminLoggedIn) {
     routes = (
       <Routes>
         <Route exact path="/" element={<Home />} />
@@ -62,21 +65,56 @@ export default function App() {
         <Route exact path="/explore" element={<Explore />} />
         <Route exact path="/checkout" element={<Checkout />} />
         <Route exact path="/my-orders" element={<MyOrders />} />
+        <Route exact path="/track/:orderId" element={<TrackOrder />} />
+        <Route exact path="/live/:token" element={<LiveTracking />} />
+        <Route exact path="/delivery/:token" element={<DeliveryPartner />} />
         <Route exact path="/privacy" element={<Privacy />} />
         <Route exact path="/review" element={<Review />} />
         <Route exact path="/contactUs" element={<ContactUs/>}/>
         <Route exact path="/admin" element={<AdminFirstPage />} />
         <Route exact path="/admin/manage-products" element={<ManageProducts />} />
         <Route exact path="/admin/orders" element={<AdminOrders />} />
+        <Route exact path="/admin/delivery" element={<AdminDelivery />} />
+        <Route exact path="/admin/users" element={<AdminUsers />} />
       </Routes>
     );
-  } else if (!isUserLoggedIn) {
+  } else if (isPartnerLoggedIn) {
+    routes = (
+      <Routes>
+        <Route exact path="/partner" element={<PartnerDashboard />} />
+        <Route exact path="/delivery/:token" element={<DeliveryPartner />} />
+        <Route exact path="/live/:token" element={<LiveTracking />} />
+        <Route exact path="/privacy" element={<Privacy />} />
+        <Route exact path="/contactUs" element={<ContactUs/>}/>
+        <Route exact path="*" element={<PartnerDashboard />} />
+      </Routes>
+    );
+  } else if (isUserLoggedIn) {
+    routes = (
+      <Routes>
+        <Route exact path="/" element={<Home />} />
+        <Route exact path="*" element={<Home />} />
+        <Route exact path="/about" element={<About />} />
+        <Route exact path="/cart" element={<Cart />} />
+        <Route exact path="/explore" element={<Explore />} />
+        <Route exact path="/checkout" element={<Checkout />} />
+        <Route exact path="/my-orders" element={<MyOrders />} />
+        <Route exact path="/track/:orderId" element={<TrackOrder />} />
+        <Route exact path="/live/:token" element={<LiveTracking />} />
+        <Route exact path="/privacy" element={<Privacy />} />
+        <Route exact path="/review" element={<Review />} />
+        <Route exact path="/contactUs" element={<ContactUs/>}/>
+      </Routes>
+    );
+  } else {
     routes = (
       <Routes>
         <Route exact path="/signin" element={<SignIn />} />
         <Route exact path="/signup" element={<SignUp />} />
         <Route exact path="/" element={<SignIn />} />
         <Route exact path="/contactUs" element={<ContactUs/>}/>
+        <Route exact path="/live/:token" element={<LiveTracking />} />
+        <Route exact path="/delivery/:token" element={<DeliveryPartner />} />
         <Route exact path="*" element={<NotFound />} />
       </Routes>
     );
@@ -84,8 +122,11 @@ export default function App() {
   return (
     <AuthContext.Provider
       value={{
-        isUserLoggedIn: isUserLoggedIn,
-        isAdminLoggedIn: isAdminLoggedIn,
+        role,
+        user,
+        isUserLoggedIn,
+        isAdminLoggedIn,
+        isPartnerLoggedIn,
         login: login,
         logout: logout,
       }}

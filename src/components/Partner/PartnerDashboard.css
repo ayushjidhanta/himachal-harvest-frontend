@@ -1,0 +1,123 @@
+.partnerShell {
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  background: #f4f6f7;
+}
+
+.partnerContainer {
+  width: min(900px, calc(100% - 2rem));
+  margin: 0 auto;
+}
+
+.partnerHeader {
+  background: rgba(255, 255, 255, 0.95);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.partnerHeaderInner {
+  padding: 1rem 0;
+}
+
+.partnerTitle {
+  margin: 0;
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: #111;
+}
+
+.partnerSub {
+  margin-top: 0.25rem;
+  color: #555;
+  font-size: 0.95rem;
+}
+
+.partnerBody {
+  flex: 1 1 auto;
+  overflow: hidden;
+}
+
+.partnerScroll {
+  height: 100%;
+  overflow-y: auto;
+  padding: 1rem 0 2rem;
+}
+
+.partnerCard {
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 16px;
+  padding: 1rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+}
+
+.partnerLabel {
+  font-weight: 900;
+  color: #111;
+  margin-bottom: 0.5rem;
+}
+
+.partnerInput {
+  width: 100%;
+  border: 1px solid rgba(0, 0, 0, 0.16);
+  border-radius: 12px;
+  padding: 0.75rem 0.85rem;
+  outline: none;
+}
+
+.partnerActions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-top: 0.9rem;
+}
+
+.partnerBtn {
+  border: none;
+  border-radius: 12px;
+  padding: 0.7rem 0.9rem;
+  cursor: pointer;
+  font-weight: 900;
+  background: #111;
+  color: #fff;
+}
+
+.partnerBtnPrimary {
+  background: #219653;
+}
+
+.partnerBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.partnerHint {
+  margin-top: 0.9rem;
+  color: #666;
+  font-size: 0.95rem;
+  line-height: 1.35rem;
+}
+
+.footer {
+  flex: 0 0 auto;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  background: #fff;
+}
+
+.footer footer > section {
+  display: none;
+}
+
+.footer footer > section:last-child {
+  display: flex;
+  padding: 0.75rem 0;
+  background: #fff;
+}
+
+.footer footer > section:last-child p {
+  margin: 0;
+  color: #111;
+  font-size: 0.9rem;
+}
+

@@ -2,9 +2,9 @@
 import React, { useContext, useState } from "react";
 import styles from "./SignIn.module.css";
 import { useNavigate } from "react-router";
-// import Roles from "../../../enum/Roles";
 // Custom React Packages
 import { signIn } from "../../../service/AuthService/api";
+import { setAuthUser } from "../../../service/authUser";
 
 // Components & Assets include:
 import { Icons } from "../../../assets/Icons/Icons";
@@ -70,15 +70,24 @@ const SignIn = () => {
       // }
 
       if (response.data.user_authenticated) {
-        const role = (response.data.role).toLowerCase();
+        const role = String(response?.data?.role || "User").toLowerCase();
+        const u = response?.data?.user || {};
+        const authUser = {
+          username: u.username || credentials.username,
+          email: u.email || "",
+          role,
+        };
         setSpinner(false);
         credentialHandler("username", "");
         credentialHandler("password", "");
         localStorage.setItem("role", role);
+        setAuthUser(authUser);
         auth.login(role);
         showAlert(response.data.message);
         setTimeout(() => {
-          navigate("/");
+          if (role === "admin") navigate("/admin");
+          else if (role === "partner") navigate("/partner");
+          else navigate("/");
         }, 2000);
       } else {
         setSpinner(false);

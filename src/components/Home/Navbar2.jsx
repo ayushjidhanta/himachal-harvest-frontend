@@ -11,6 +11,14 @@ export default function Navbar2() {
   const { cartItems } = useSelector((state) => state.cart);
   const [isFixed, setIsFixed] = useState(false);
   const auth = useContext(AuthContext);
+  const role = String(auth?.role || "").toLowerCase();
+  const showAdmin = role === "admin" || auth.isAdminLoggedIn;
+  const showUser = role === "user" || auth.isUserLoggedIn;
+  const showPartner = role === "partner" || auth.isPartnerLoggedIn;
+  const showCart = showUser || showAdmin;
+  const showProducts = showUser || showAdmin;
+  const showMyOrders = showUser || showAdmin;
+  const showReview = showUser || showAdmin;
 
   const handleScroll = () => {
     const offset = window.scrollY;
@@ -87,10 +95,11 @@ export default function Navbar2() {
         <Link to="/">Home</Link>
         <Link to="/about">About</Link>
         <Link to="/privacy">Privacy</Link>
-        <Link to="/explore">Products</Link>
-        <Link to="/review">Review</Link>
-        <Link to="/my-orders">My Orders</Link>
-        {(auth.isUserLoggedIn || auth.isAdminLoggedIn) && (
+        {showProducts ? <Link to="/explore">Products</Link> : null}
+        {showReview ? <Link to="/review">Review</Link> : null}
+        {showMyOrders ? <Link to="/my-orders">My Orders</Link> : null}
+        {showPartner ? <Link to="/partner">Partner</Link> : null}
+        {(showUser || showAdmin || showPartner) && (
           <button type="button" className={navStyle.logoutBtn} onClick={handleLogout}>
             Logout
           </button>
@@ -98,16 +107,20 @@ export default function Navbar2() {
       </nav>
 
       <div className={navStyle.icons}>
-        <div
-          className={navStyle.search_icon}
-          id="search-btnn"
-          onClick={toggleSearch}
-        >
-          Search
-        </div>
-        <div className={navStyle.cart_icon} id="cart-btnn" onClick={toggleCart}>
-          Cart
-        </div>
+        {showProducts ? (
+          <div
+            className={navStyle.search_icon}
+            id="search-btnn"
+            onClick={toggleSearch}
+          >
+            Search
+          </div>
+        ) : null}
+        {showCart ? (
+          <div className={navStyle.cart_icon} id="cart-btnn" onClick={toggleCart}>
+            Cart
+          </div>
+        ) : null}
         <div
           className={navStyle.menu_icon}
           id={navStyle.menu_btnn}
@@ -115,7 +128,7 @@ export default function Navbar2() {
         >
           Menu
         </div>
-        {auth.isAdminLoggedIn && (
+        {showAdmin && (
           <div className={navStyle.Admin} id="ADMIN" onClick={toggleAdmin}>
             Admin
           </div>
@@ -128,7 +141,7 @@ export default function Navbar2() {
       </div>
 
       {/* CART ITEMS CONTAINER----- */}
-      <div className={navStyle.cart_items_container} ref={cartItemRef}>
+      <div className={navStyle.cart_items_container} ref={cartItemRef} style={showCart ? undefined : { display: "none" }}>
         <div className={navStyle.cart_item}>
           <img src={cartImage} alt="Loading..." />
           <span className="fas fa_time"></span>
@@ -150,6 +163,8 @@ export default function Navbar2() {
         <Link to="/admin">Add Product</Link>
         <Link to="/admin/manage-products">Manage Products</Link>
         <Link to="/admin/orders">Orders</Link>
+        <Link to="/admin/delivery">Delivery</Link>
+        <Link to="/admin/users">Users</Link>
       </div>
     </div>
   );

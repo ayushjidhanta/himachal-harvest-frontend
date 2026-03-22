@@ -1,4 +1,4 @@
-import React from "react";
+// import React from "react";
 import styles from "./Footer.module.css";
 import { Icons } from "../Icons/Icons";
 import PrimaryButton from "../Button/PrimaryButton/PrimaryButton";
@@ -24,7 +24,7 @@ function Footer() {
       <section className={styles.social_icons}>
         {Object.keys(social_icons).map((key) => {
           return (
-            <a key={key} href={social_icons[key]} target="_blank">
+            <a key={key} href={social_icons[key]} target="_blank" rel="noreferrer">
               {Icons[key]}
             </a>
           );

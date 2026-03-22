@@ -1,8 +1,8 @@
 import styles from "./Home.module.css";
-import React from "react";
+// import React from "react";
 import Footer from "../../assets/Footer/Footer";
 import PrimaryButton from "../../assets/Button/PrimaryButton/PrimaryButton";
-import NavBar from "../../assets/NavBar/NavBar";
+// import NavBar from "../../assets/NavBar/NavBar";
 import CardSlider from "../../assets/CardSlider/CardSlider";
 
 import farmerImage from "../../assets/Images/farmer.png";

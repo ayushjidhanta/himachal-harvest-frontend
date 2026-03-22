@@ -19,7 +19,7 @@ function ImageBox({ images }) {
 
   return (
     <div className={Style.image_box}>
-      <img src={images[currentImageIndex].url} alt="Image" />
+      <img src={images[currentImageIndex].url} alt={`image_${currentImageIndex}`} />
       <div className={Style.description}>
         {images[currentImageIndex].description}
         <div>

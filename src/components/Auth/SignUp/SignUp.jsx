@@ -9,7 +9,7 @@ import { signUp } from "../../../service/AuthService/api";
 
 // Components & Assets include:
 import { Icons } from "../../../assets/Icons/Icons";
-import Spinner from "../../../assets/Spinner/Spinner";
+// import Spinner from "../../../assets/Spinner/Spinner";
 import AlertDialog from "../../../assets/AlertDialog/AlertDialog";
 import PrimaryButton from "../../../assets/Button/PrimaryButton/PrimaryButton";
 import SecondaryButton from "../../../assets/Button/SecondaryButton/SecondaryButton";

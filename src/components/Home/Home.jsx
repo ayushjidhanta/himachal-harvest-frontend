@@ -4,6 +4,7 @@ import Footer from "../../assets/Footer/Footer";
 import PrimaryButton from "../../assets/Button/PrimaryButton/PrimaryButton";
 // import NavBar from "../../assets/NavBar/NavBar";
 import CardSlider from "../../assets/CardSlider/CardSlider";
+import { useNavigate } from "react-router-dom";
 
 import farmerImage from "../../assets/Images/farmer.png";
 import tractorImage from "../../assets/Images/tractor.png";
@@ -18,6 +19,7 @@ const scrollDown = () => {
 };
 
 function Home() {
+  const navigate = useNavigate();
   const data = [
     {
       image: earthImage,
@@ -41,12 +43,38 @@ function Home() {
   return (
     <>
       {/* <NavBar /> */}
-      <Navbar2/>
+      <Navbar2 />
       <main className={styles.home}>
         <div className={styles.content}>
-          <h1>Himachal Harvest</h1>
-          <h4>Our Farm Our Promise</h4>
-          <PrimaryButton event={null} title="Explore" isDisabled={false} />
+          <div className={styles.heroCard}>
+            <h1>Himachal Harvest</h1>
+            <p className={styles.tagline}>Our Farm. Our Promise.</p>
+            <p className={styles.description}>
+              Shop fresh, locally sourced produce and get it delivered with care — straight from
+              Himachal’s farms to your doorstep.
+            </p>
+
+            <div className={styles.ctaRow}>
+              <PrimaryButton
+                event={() => navigate("/explore")}
+                title="Explore Products"
+                isDisabled={false}
+              />
+              <button
+                type="button"
+                className={styles.secondaryBtn}
+                onClick={() => navigate("/contactUs")}
+              >
+                Contact Us
+              </button>
+            </div>
+
+            <div className={styles.pillRow}>
+              <span className={styles.pill}>Farm Fresh</span>
+              <span className={styles.pill}>Seasonal Picks</span>
+              <span className={styles.pill}>Fast Delivery</span>
+            </div>
+          </div>
           <div className={styles.scroll_down}>
             <div className={styles.mouse_wrapper} onClick={scrollDown}>
               <div className={styles.mouse}>

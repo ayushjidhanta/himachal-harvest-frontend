@@ -1,0 +1,12 @@
+
+.orderMap {
+  width: 100%;
+  height: 260px;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.orderMapSmall {
+  height: 220px;
+}

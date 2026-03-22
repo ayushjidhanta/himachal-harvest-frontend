@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useContext, useMemo, useState } from "react";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -6,6 +6,7 @@ import Navbar2 from "../Home/Navbar2";
 import Footer from "../../assets/Footer/Footer";
 import { SpinnerHimachalHarvest } from "../../assets/Spinner/Spinner";
 import { resetCart } from "../../redux/actions/cartAction";
+import { AuthContext } from "../../context/auth-context";
 import "./checkout.css";
 
 const API_URL = process.env.REACT_APP_API_URL;
@@ -19,11 +20,12 @@ export default function Checkout() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { cartItems } = useSelector((state) => state.cart);
+  const auth = useContext(AuthContext);
 
   const [form, setForm] = useState({
     firstName: "",
     lastName: "",
-    email: "",
+    email: String(auth?.user?.email || ""),
     phone: "",
     addressLine1: "",
     city: "",
@@ -32,6 +34,9 @@ export default function Checkout() {
   });
 
   const [submitting, setSubmitting] = useState(false);
+  const [locating, setLocating] = useState(false);
+  const [locationError, setLocationError] = useState("");
+  const [deliveryLocation, setDeliveryLocation] = useState(null);
   const [orderId, setOrderId] = useState("");
   const [error, setError] = useState("");
 
@@ -53,6 +58,37 @@ export default function Checkout() {
   }, [cartItems]);
 
   const update = (key, value) => setForm((p) => ({ ...p, [key]: value }));
+
+  const requestLocation = () => {
+    setLocationError("");
+
+    if (!navigator.geolocation) {
+      setLocationError("Geolocation is not supported on this device/browser.");
+      return;
+    }
+
+    setLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setDeliveryLocation({
+          lat: pos.coords.latitude,
+          lng: pos.coords.longitude,
+          accuracy: pos.coords.accuracy,
+        });
+        setLocating(false);
+      },
+      (err) => {
+        setLocationError(err?.message || "Failed to get location");
+        setLocating(false);
+      },
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 60000 }
+    );
+  };
+
+  const clearLocation = () => {
+    setDeliveryLocation(null);
+    setLocationError("");
+  };
 
   const submit = async (e) => {
     e.preventDefault();
@@ -85,6 +121,7 @@ export default function Checkout() {
         productId: item.id,
         quantity: Number(item.quantity || 1),
       })),
+      deliveryLocation: deliveryLocation || undefined,
     };
 
     setSubmitting(true);
@@ -112,7 +149,7 @@ export default function Checkout() {
   return (
     <div className="checkoutShell">
       <Navbar2 />
-      <SpinnerHimachalHarvest show={submitting} />
+      <SpinnerHimachalHarvest show={submitting || locating} />
 
       <div className="checkoutHeader">
         <div className="checkoutContainer checkoutHeaderInner">
@@ -145,6 +182,12 @@ export default function Checkout() {
                 Your order id is <span className="checkoutOrderId">{orderId}</span>
               </p>
               <div className="checkoutActionsRow">
+                <button type="button" className="checkoutBtnPrimary" onClick={() => navigate(`/track/${orderId}`)}>
+                  Track order
+                </button>
+                <button type="button" className="checkoutBtnSecondary" onClick={() => navigate("/my-orders")}>
+                  View my orders
+                </button>
                 <button type="button" className="checkoutBtnPrimary" onClick={() => navigate("/explore")}>
                   Continue shopping
                 </button>
@@ -185,6 +228,8 @@ export default function Checkout() {
                         type="email"
                         value={form.email}
                         onChange={(e) => update("email", e.target.value)}
+                        readOnly
+                        disabled
                         required
                       />
                     </div>
@@ -236,7 +281,37 @@ export default function Checkout() {
                     </div>
                   </div>
 
-                  {error ? <div className="checkoutError">{error}</div> : null}
+                                    <div className="checkoutCard" style={{ marginTop: "0.9rem" }}>
+                    <div className="checkoutCardTitle">Location (optional)</div>
+                    <div style={{ color: "#555", fontSize: "0.95rem" }}>
+                      Share your current location to help with delivery coordination. You can skip this.
+                    </div>
+
+                    <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap", marginTop: "0.75rem" }}>
+                      <button
+                        type="button"
+                        className="checkoutBtnSecondary"
+                        onClick={requestLocation}
+                        disabled={locating}
+                      >
+                        {locating ? "Getting location..." : "Use my current location"}
+                      </button>
+                      <button type="button" className="checkoutBtnSecondary" onClick={clearLocation}>
+                        Clear
+                      </button>
+                    </div>
+
+                    {deliveryLocation ? (
+                      <div style={{ marginTop: "0.75rem", color: "#333" }}>
+                        Captured: {deliveryLocation.lat.toFixed(6)}, {deliveryLocation.lng.toFixed(6)}
+                        {deliveryLocation.accuracy ? ` (±${Math.round(deliveryLocation.accuracy)}m)` : ""}
+                      </div>
+                    ) : null}
+
+                    {locationError ? <div className="checkoutError" style={{ marginTop: "0.75rem" }}>{locationError}</div> : null}
+                  </div>
+
+{error ? <div className="checkoutError">{error}</div> : null}
 
                   <button type="submit" className="checkoutBtnPrimary" disabled={submitting}>
                     {submitting ? "Placing order..." : "Place order"}

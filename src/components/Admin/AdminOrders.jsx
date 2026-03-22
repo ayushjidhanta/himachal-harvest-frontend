@@ -1,4 +1,3 @@
-
 import React, { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
@@ -6,11 +5,13 @@ import Navbar2 from "../Home/Navbar2";
 import Footer from "../../assets/Footer/Footer";
 import { SpinnerHimachalHarvest } from "../../assets/Spinner/Spinner";
 import { AuthContext } from "../../context/auth-context";
+import OrderMap from "../Maps/OrderMap";
+import AdminKeyCard from "./AdminKeyCard";
+import { getAdminKey } from "../../service/adminKey";
 import layout from "./AdminLayout.module.css";
 import styles from "./AdminOrders.module.css";
 
 const API_URL = process.env.REACT_APP_API_URL;
-const ADMIN_KEY = process.env.REACT_APP_ADMIN_API_KEY;
 
 const formatINR = (value) =>
   new Intl.NumberFormat("en-IN", { maximumFractionDigits: 0 }).format(
@@ -25,6 +26,14 @@ const formatDateTime = (value) => {
   }
 };
 
+const openMapsUrl = (loc) => {
+  if (!loc) return null;
+  const lat = Number(loc.lat);
+  const lng = Number(loc.lng);
+  if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+  return `https://www.google.com/maps?q=${lat},${lng}`;
+};
+
 const STATUS_OPTIONS = [
   "created",
   "confirmed",
@@ -37,6 +46,8 @@ const STATUS_OPTIONS = [
 export default function AdminOrders() {
   const auth = useContext(AuthContext);
 
+  const [adminKey, setAdminKey] = useState(getAdminKey());
+
   const [orders, setOrders] = useState([]);
   const [query, setQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
@@ -46,9 +57,9 @@ export default function AdminOrders() {
 
   const headers = useMemo(() => {
     const h = {};
-    if (ADMIN_KEY) h["x-admin-key"] = ADMIN_KEY;
+    if (adminKey) h["x-admin-key"] = adminKey;
     return h;
-  }, []);
+  }, [adminKey]);
 
   const fetchOrders = useCallback(async () => {
     if (!API_URL) {
@@ -63,16 +74,19 @@ export default function AdminOrders() {
       setOrders(Array.isArray(data?.data) ? data.data : []);
     } catch (err) {
       const status = err?.response?.status;
-      const msg = err?.response?.data?.error?.message || err?.message || "Failed to load orders";
-      if ((status === 401 || status === 403) && !ADMIN_KEY) {
-        setError(`${status}: ${msg}. Missing REACT_APP_ADMIN_API_KEY.`);
+      const msg =
+        err?.response?.data?.error?.message ||
+        err?.message ||
+        "Failed to load orders";
+      if ((status === 401 || status === 403) && !adminKey) {
+        setError(`${status}: ${msg}. Missing Admin API Key (backend ADMIN_API_KEY is likely set).`);
       } else {
         setError(status ? `${status}: ${msg}` : msg);
       }
     } finally {
       setLoading(false);
     }
-  }, [headers]);
+  }, [headers, adminKey]);
 
   useEffect(() => {
     fetchOrders();
@@ -96,17 +110,26 @@ export default function AdminOrders() {
     setError("");
 
     try {
-      const { data } = await axios.patch(`${API_URL}/orders/admin/${orderId}`, payload, { headers });
+      const { data } = await axios.patch(
+        `${API_URL}/orders/admin/${orderId}`,
+        payload,
+        { headers }
+      );
       const updated = data?.data;
       if (updated) {
-        setOrders((prev) => prev.map((o) => (o.orderId === updated.orderId ? updated : o)));
+        setOrders((prev) =>
+          prev.map((o) => (o.orderId === updated.orderId ? updated : o))
+        );
       }
       setBanner(`Updated order ${orderId}`);
     } catch (err) {
       const status = err?.response?.status;
-      const msg = err?.response?.data?.error?.message || err?.message || "Failed to update order";
-      if ((status === 401 || status === 403) && !ADMIN_KEY) {
-        setError(`${status}: ${msg}. Missing REACT_APP_ADMIN_API_KEY.`);
+      const msg =
+        err?.response?.data?.error?.message ||
+        err?.message ||
+        "Failed to update order";
+      if ((status === 401 || status === 403) && !adminKey) {
+        setError(`${status}: ${msg}. Missing Admin API Key (backend ADMIN_API_KEY is likely set).`);
       } else {
         setError(status ? `${status}: ${msg}` : msg);
       }
@@ -117,7 +140,6 @@ export default function AdminOrders() {
     return (
       <>
         <Navbar2 />
-      <SpinnerHimachalHarvest show={loading} />
         <div className={layout.shell}>
           <div className={layout.header}>
             <div className={layout.container}>
@@ -145,13 +167,16 @@ export default function AdminOrders() {
   return (
     <div className={layout.shell}>
       <Navbar2 />
+      <SpinnerHimachalHarvest show={loading} />
 
       <div className={layout.header}>
         <div className={layout.container}>
           <div className={layout.headerInner}>
             <div>
               <h1 className={layout.title}>Orders</h1>
-              <div className={layout.sub}>Update status + tracking (dispatch, delivery, etc.)</div>
+              <div className={layout.sub}>
+                Update status + tracking + last known location
+              </div>
             </div>
             <div className={layout.tabs}>
               <Link className={layout.tab} to="/admin">
@@ -160,8 +185,17 @@ export default function AdminOrders() {
               <Link className={layout.tab} to="/admin/manage-products">
                 Manage Products
               </Link>
-              <Link className={`${layout.tab} ${layout.tabActive}`} to="/admin/orders">
+              <Link
+                className={`${layout.tab} ${layout.tabActive}`}
+                to="/admin/orders"
+              >
                 Orders
+              </Link>
+              <Link className={layout.tab} to="/admin/delivery">
+                Delivery
+              </Link>
+              <Link className={layout.tab} to="/admin/users">
+                Users
               </Link>
             </div>
           </div>
@@ -173,6 +207,8 @@ export default function AdminOrders() {
           {banner ? <div className={layout.banner}>{banner}</div> : null}
           {error ? <div className={layout.alert}>{error}</div> : null}
 
+          <AdminKeyCard adminKey={adminKey} setAdminKey={setAdminKey} />
+
           <div className={styles.controls}>
             <div className={styles.search}>
               <input
@@ -182,7 +218,11 @@ export default function AdminOrders() {
               />
             </div>
             <div className={styles.filters}>
-              <select className={styles.select} value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
+              <select
+                className={styles.select}
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+              >
                 <option value="">All statuses</option>
                 {STATUS_OPTIONS.map((s) => (
                   <option key={s} value={s}>
@@ -190,8 +230,12 @@ export default function AdminOrders() {
                   </option>
                 ))}
               </select>
-              <button className={`${styles.btn} ${styles.btnSecondary}`} type="button" onClick={fetchOrders}>
-                {loading ? "Loading..." : "Refresh"}
+              <button
+                className={`${styles.btn} ${styles.btnSecondary}`}
+                type="button"
+                onClick={fetchOrders}
+              >
+                Refresh
               </button>
             </div>
           </div>
@@ -220,18 +264,67 @@ export default function AdminOrders() {
 function OrderCard({ order, onUpdate }) {
   const [status, setStatus] = useState(order.status || "created");
   const [carrier, setCarrier] = useState(order?.tracking?.carrier || "");
-  const [trackingNumber, setTrackingNumber] = useState(order?.tracking?.trackingNumber || "");
+  const [trackingNumber, setTrackingNumber] = useState(
+    order?.tracking?.trackingNumber || ""
+  );
   const [trackingUrl, setTrackingUrl] = useState(order?.tracking?.trackingUrl || "");
   const [adminNotes, setAdminNotes] = useState(order?.adminNotes || "");
 
+  const [shipmentText, setShipmentText] = useState(order?.shipment?.lastKnownText || "");
+  const [shipLat, setShipLat] = useState(
+    order?.shipment?.lastKnownLocation?.lat !== undefined
+      ? String(order.shipment.lastKnownLocation.lat)
+      : ""
+  );
+  const [shipLng, setShipLng] = useState(
+    order?.shipment?.lastKnownLocation?.lng !== undefined
+      ? String(order.shipment.lastKnownLocation.lng)
+      : ""
+  );
+
   const isCancelled = order.status === "cancelled";
 
+  const deliveryLoc = order?.deliveryLocation;
+  const shipmentLocFromState =
+    shipLat.trim() && shipLng.trim()
+      ? { lat: Number(shipLat), lng: Number(shipLng) }
+      : order?.shipment?.lastKnownLocation;
+
+  const mapsDelivery = openMapsUrl(deliveryLoc);
+  const mapsShipment = openMapsUrl(shipmentLocFromState);
+
+  const useMyLocation = () => {
+    if (!navigator.geolocation) return;
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setShipLat(String(pos.coords.latitude));
+        setShipLng(String(pos.coords.longitude));
+      },
+      () => {},
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 60000 }
+    );
+  };
+
   const submit = () => {
-    onUpdate(order.orderId, {
+    const payload = {
       status,
       tracking: { carrier, trackingNumber, trackingUrl },
       adminNotes,
-    });
+    };
+
+    const lat = shipLat.trim() ? Number(shipLat) : undefined;
+    const lng = shipLng.trim() ? Number(shipLng) : undefined;
+    const text = shipmentText.trim();
+
+    if ((Number.isFinite(lat) && Number.isFinite(lng)) || text) {
+      payload.shipment = {
+        lastKnownLocation:
+          Number.isFinite(lat) && Number.isFinite(lng) ? { lat, lng } : undefined,
+        lastKnownText: text || undefined,
+      };
+    }
+
+    onUpdate(order.orderId, payload);
   };
 
   return (
@@ -269,6 +362,33 @@ function OrderCard({ order, onUpdate }) {
               </div>
             ))}
           </div>
+
+          <div style={{ marginTop: "0.9rem" }}>
+            <div className={styles.sectionTitle}>Map</div>
+            <OrderMap
+              deliveryLocation={deliveryLoc}
+              shipmentLocation={shipmentLocFromState}
+              small
+            />
+            {(mapsDelivery || mapsShipment) ? (
+              <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap", marginTop: "0.65rem" }}>
+                {mapsDelivery ? (
+                  <a className={styles.link} href={mapsDelivery} target="_blank" rel="noreferrer">
+                    Open delivery location
+                  </a>
+                ) : null}
+                {mapsShipment ? (
+                  <a className={styles.link} href={mapsShipment} target="_blank" rel="noreferrer">
+                    Open last known location
+                  </a>
+                ) : null}
+              </div>
+            ) : (
+              <div style={{ color: "#666", fontSize: "0.9rem", marginTop: "0.5rem" }}>
+                No location provided yet.
+              </div>
+            )}
+          </div>
         </div>
 
         <div>
@@ -288,13 +408,57 @@ function OrderCard({ order, onUpdate }) {
                   </option>
                 ))}
               </select>
-              <input className={styles.input} value={carrier} onChange={(e) => setCarrier(e.target.value)} placeholder="Carrier (e.g., Delhivery)" />
+              <input
+                className={styles.input}
+                value={carrier}
+                onChange={(e) => setCarrier(e.target.value)}
+                placeholder="Carrier (e.g., Delhivery)"
+              />
+            </div>
+
+            <div className={styles.row2}>
+              <input
+                className={styles.input}
+                value={trackingNumber}
+                onChange={(e) => setTrackingNumber(e.target.value)}
+                placeholder="Tracking number"
+              />
+              <input
+                className={styles.input}
+                value={trackingUrl}
+                onChange={(e) => setTrackingUrl(e.target.value)}
+                placeholder="Tracking URL"
+              />
+            </div>
+
+            <div className={styles.sectionTitle} style={{ marginTop: "0.5rem" }}>
+              Last known location
             </div>
             <div className={styles.row2}>
-              <input className={styles.input} value={trackingNumber} onChange={(e) => setTrackingNumber(e.target.value)} placeholder="Tracking number" />
-              <input className={styles.input} value={trackingUrl} onChange={(e) => setTrackingUrl(e.target.value)} placeholder="Tracking URL" />
+              <input className={styles.input} value={shipLat} onChange={(e) => setShipLat(e.target.value)} placeholder="Latitude" />
+              <input className={styles.input} value={shipLng} onChange={(e) => setShipLng(e.target.value)} placeholder="Longitude" />
             </div>
-            <textarea className={styles.textarea} value={adminNotes} onChange={(e) => setAdminNotes(e.target.value)} placeholder="Admin notes..." />
+            <div className={styles.actions} style={{ marginTop: "0" }}>
+              <button className={`${styles.btn} ${styles.btnSecondary}`} type="button" onClick={useMyLocation}>
+                Use my location
+              </button>
+              <button className={`${styles.btn} ${styles.btnSecondary}`} type="button" onClick={() => { setShipLat(""); setShipLng(""); }}>
+                Clear coords
+              </button>
+            </div>
+            <textarea
+              className={styles.textarea}
+              value={shipmentText}
+              onChange={(e) => setShipmentText(e.target.value)}
+              placeholder="Status note (e.g., Reached Shimla hub / Dispatched)"
+            />
+
+            <textarea
+              className={styles.textarea}
+              value={adminNotes}
+              onChange={(e) => setAdminNotes(e.target.value)}
+              placeholder="Admin notes shown to customer..."
+            />
 
             <div className={styles.actions}>
               <button className={`${styles.btn} ${styles.btnPrimary}`} type="button" onClick={submit}>

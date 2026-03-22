@@ -4,10 +4,11 @@ import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import Navbar2 from "../Home/Navbar2";
 import { AuthContext } from "../../context/auth-context";
+import AdminKeyCard from "./AdminKeyCard";
+import { getAdminKey } from "../../service/adminKey";
 import styles from "./AdminFirstPage.module.css";
 
 const API_URL = process.env.REACT_APP_API_URL;
-const ADMIN_KEY = process.env.REACT_APP_ADMIN_API_KEY;
 
 const fileToDataUrl = (file) =>
   new Promise((resolve, reject) => {
@@ -20,6 +21,8 @@ const fileToDataUrl = (file) =>
 export default function AdminFirstPage() {
   const auth = useContext(AuthContext);
   const navigate = useNavigate();
+
+  const [adminKey, setAdminKey] = useState(getAdminKey());
 
   const [imageMode, setImageMode] = useState("upload");
   const [imageFile, setImageFile] = useState(null);
@@ -132,7 +135,7 @@ export default function AdminFirstPage() {
     setSubmitting(true);
     try {
       const headers = {};
-      if (ADMIN_KEY) headers["x-admin-key"] = ADMIN_KEY;
+      if (adminKey) headers["x-admin-key"] = adminKey;
 
       const { data } = await axios.post(`${API_URL}/products`, payload, { headers });
 
@@ -144,8 +147,8 @@ export default function AdminFirstPage() {
       const backendMsg = err?.response?.data?.error?.message || err?.response?.data?.message;
       const msg = backendMsg || err?.message || "Failed to create product";
 
-      if ((status === 401 || status === 403) && !ADMIN_KEY) {
-        setError(`${status}: ${msg}. Missing REACT_APP_ADMIN_API_KEY (and backend ADMIN_API_KEY may be set).`);
+      if ((status === 401 || status === 403) && !adminKey) {
+        setError(`${status}: ${msg}. Missing Admin API Key (backend ADMIN_API_KEY is likely set).`);
       } else {
         setError(status ? `${status}: ${msg}` : msg);
       }
@@ -205,7 +208,15 @@ export default function AdminFirstPage() {
             <Link className={`${styles.button} ${styles.secondary}`} to="/admin/orders">
               Orders
             </Link>
+            <Link className={`${styles.button} ${styles.secondary}`} to="/admin/delivery">
+              Delivery
+            </Link>
+            <Link className={`${styles.button} ${styles.secondary}`} to="/admin/users">
+              Users
+            </Link>
           </div>
+
+          <AdminKeyCard adminKey={adminKey} setAdminKey={setAdminKey} />
 
           <form onSubmit={submit}>
             <div className={styles.grid}>
@@ -418,7 +429,7 @@ export default function AdminFirstPage() {
           {error && <div className={styles.error}>{error}</div>}
 
           <div className={styles.small} style={{ marginTop: "1rem" }}>
-            Tip: set `REACT_APP_ADMIN_API_KEY` in frontend and `ADMIN_API_KEY` on the backend to protect product creation.
+            Tip: set `REACT_APP_ADMIN_API_KEY` in frontend and `ADMIN_API_KEY` on the backend to protect admin APIs.
           </div>
         </div>
       </div>

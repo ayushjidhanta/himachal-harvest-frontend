@@ -25,9 +25,14 @@ const Products = ({ product }) => {
     dispatch(addToCart(product.id, 1));
   };
 
+  const discountLabel =
+    product?.discount ||
+    (priceMrp > priceCost ? `${Math.round(((priceMrp - priceCost) / priceMrp) * 100)}% OFF` : "");
+
   return (
     <article className="productCard">
       <div className="productImageWrap">
+        {discountLabel ? <div className="productTopBadge">{discountLabel}</div> : null}
         <img
           className="productImage"
           src={product.url}
@@ -43,8 +48,8 @@ const Products = ({ product }) => {
         {priceMrp > priceCost && (
           <div className="productMrp">₹ {formatINR(priceMrp)}</div>
         )}
-        {product?.discount ? (
-          <span className="productBadge">{product.discount}</span>
+        {product?.seller ? (
+          <span className="productBadge">{product.seller}</span>
         ) : null}
       </div>
 
@@ -52,9 +57,11 @@ const Products = ({ product }) => {
         {product?.description}
       </p>
 
-      {product?.seller ? (
-        <div className="productSeller">Sold by {product.seller}</div>
-      ) : null}
+      {priceMrp > priceCost ? (
+        <div className="productSeller">You save ₹ {formatINR(priceMrp - priceCost)}</div>
+      ) : (
+        <div className="productSeller">Fresh & quality checked</div>
+      )}
 
       <div className="productActions">
         <button

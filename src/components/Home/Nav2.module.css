@@ -95,11 +95,16 @@ body {
     background: rgba(255, 255, 255, 0.22);
 }
 
+.navButton {
+    cursor: pointer;
+}
+
 .actions {
     display: flex;
     align-items: center;
     gap: 10px;
     min-width: max-content;
+    flex-wrap: nowrap;
 }
 
 .actionBtn {
@@ -135,6 +140,14 @@ body {
 }
 
 .menuBtn {
+    display: none;
+}
+
+.hideOnMobile {
+    display: inline-flex;
+}
+
+.mobileOnly {
     display: none;
 }
 
@@ -268,7 +281,26 @@ header .search_form input {
 }
 
 @media (max-width: 991px) {
+    .brand {
+        min-width: 0;
+        flex: 1 1 auto;
+    }
+
+    .brandLink {
+        max-width: 52vw;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
     .menuBtn {
+        display: inline-flex;
+    }
+
+    .hideOnMobile {
+        display: none;
+    }
+
+    .mobileOnly {
         display: inline-flex;
     }
 
@@ -279,13 +311,15 @@ header .search_form input {
         left: 0;
         background: rgba(245, 245, 245, 0.98);
         backdrop-filter: blur(10px);
-        height: calc(100vh - 72px);
+        max-height: calc(100vh - 72px);
+        overflow-y: auto;
         padding: 16px;
         display: none;
         flex-direction: column;
         align-items: stretch;
         justify-content: flex-start;
         gap: 10px;
+        z-index: 1001;
     }
 
     .navLink {

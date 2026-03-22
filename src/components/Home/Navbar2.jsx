@@ -123,13 +123,23 @@ export default function Navbar2() {
             {item.label}
           </NavLink>
         ))}
+
+        {isLoggedIn && (
+          <button
+            type="button"
+            className={`${navStyle.navLink} ${navStyle.navButton} ${navStyle.mobileOnly}`}
+            onClick={handleLogout}
+          >
+            Logout
+          </button>
+        )}
       </nav>
 
       <div className={navStyle.actions}>
         {showProducts ? (
           <button
             type="button"
-            className={navStyle.actionBtn}
+            className={`${navStyle.actionBtn} ${navStyle.hideOnMobile}`}
             onClick={toggleSearch}
             aria-label="Search products"
           >
@@ -172,7 +182,11 @@ export default function Navbar2() {
         </button>
 
         {isLoggedIn && (
-          <button type="button" className={navStyle.logoutBtn} onClick={handleLogout}>
+          <button
+            type="button"
+            className={`${navStyle.logoutBtn} ${navStyle.hideOnMobile}`}
+            onClick={handleLogout}
+          >
             Logout
           </button>
         )}

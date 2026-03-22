@@ -1,7 +1,6 @@
-import React, { useRef, useState, useEffect, useContext } from "react";
-import { useNavigate } from "react-router";
+import React, { useRef, useContext, useMemo } from "react";
+import { NavLink, Link, useNavigate } from "react-router-dom";
 import navStyle from "./Nav2.module.css";
-import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import cartImage from "../../assets/Images/Cart.gif";
 import { AuthContext } from "../../context/auth-context";
@@ -9,23 +8,26 @@ import { AuthContext } from "../../context/auth-context";
 export default function Navbar2() {
   const navigate = useNavigate();
   const { cartItems } = useSelector((state) => state.cart);
-  const [isFixed, setIsFixed] = useState(false);
   const auth = useContext(AuthContext);
-
-  const handleScroll = () => {
-    const offset = window.scrollY;
-    setIsFixed(offset > 0);
-  };
-
-  useEffect(() => {
-    window.addEventListener("scroll", handleScroll);
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
+  const role = String(auth?.role || "").toLowerCase();
+  const showAdmin = role === "admin" || auth.isAdminLoggedIn;
+  const showUser = role === "user" || auth.isUserLoggedIn;
+  const showPartner = role === "partner" || auth.isPartnerLoggedIn;
+  const showCart = showUser || showAdmin;
+  const showProducts = showUser || showAdmin;
+  const showMyOrders = showUser || showAdmin;
+  const showReview = showUser || showAdmin;
+  const isLoggedIn = showUser || showAdmin || showPartner;
 
   const togglePg = () => {
     navigate("/cart");
+  };
+
+  const closeOverlays = () => {
+    searchRef?.current?.classList?.remove(navStyle.active);
+    navbarRef?.current?.classList?.remove(navStyle.active);
+    cartItemRef?.current?.classList?.remove(navStyle.active);
+    adminRef?.current?.classList?.remove(navStyle.active);
   };
 
   const handleLogout = () => {
@@ -36,10 +38,7 @@ export default function Navbar2() {
 
     auth?.logout?.();
 
-    searchRef?.current?.classList?.remove(navStyle.active);
-    navbarRef?.current?.classList?.remove(navStyle.active);
-    cartItemRef?.current?.classList?.remove(navStyle.active);
-    adminRef?.current?.classList?.remove(navStyle.active);
+    closeOverlays();
 
     navigate("/signin");
   };
@@ -50,85 +49,148 @@ export default function Navbar2() {
   const adminRef = useRef(null);
 
   const toggleSearch = () => {
-    searchRef.current.classList.toggle(navStyle.active);
-
-    navbarRef.current.classList.remove(navStyle.active);
-    cartItemRef.current.classList.remove(navStyle.active);
-    adminRef.current.classList.remove(navStyle.active);
+    searchRef.current?.classList.toggle(navStyle.active);
+    navbarRef.current?.classList.remove(navStyle.active);
+    cartItemRef.current?.classList.remove(navStyle.active);
+    adminRef.current?.classList.remove(navStyle.active);
   };
 
   const toggleMenu = () => {
-    navbarRef.current.classList.toggle(navStyle.active);
-
-    searchRef.current.classList.remove(navStyle.active);
-    cartItemRef.current.classList.remove(navStyle.active);
-    adminRef.current.classList.remove(navStyle.active);
+    navbarRef.current?.classList.toggle(navStyle.active);
+    searchRef.current?.classList.remove(navStyle.active);
+    cartItemRef.current?.classList.remove(navStyle.active);
+    adminRef.current?.classList.remove(navStyle.active);
   };
 
   const toggleCart = () => {
-    cartItemRef.current.classList.toggle(navStyle.active);
-
-    searchRef.current.classList.remove(navStyle.active);
-    navbarRef.current.classList.remove(navStyle.active);
-    adminRef.current.classList.remove(navStyle.active);
+    cartItemRef.current?.classList.toggle(navStyle.active);
+    searchRef.current?.classList.remove(navStyle.active);
+    navbarRef.current?.classList.remove(navStyle.active);
+    adminRef.current?.classList.remove(navStyle.active);
   };
 
   const toggleAdmin = () => {
-    adminRef.current.classList.toggle(navStyle.active);
-
-    searchRef.current.classList.remove(navStyle.active);
-    navbarRef.current.classList.remove(navStyle.active);
-    cartItemRef.current.classList.remove(navStyle.active);
+    adminRef.current?.classList.toggle(navStyle.active);
+    searchRef.current?.classList.remove(navStyle.active);
+    navbarRef.current?.classList.remove(navStyle.active);
+    cartItemRef.current?.classList.remove(navStyle.active);
   };
 
+  const navItems = useMemo(() => {
+    if (showPartner) {
+      return [
+        { to: "/partner", label: "Dashboard" },
+        { to: "/contactUs", label: "Contact" },
+        { to: "/privacy", label: "Privacy" },
+      ];
+    }
+
+    if (showUser || showAdmin) {
+      return [
+        { to: "/", label: "Home" },
+        ...(showProducts ? [{ to: "/explore", label: "Products" }] : []),
+        ...(showMyOrders ? [{ to: "/my-orders", label: "My Orders" }] : []),
+        ...(showReview ? [{ to: "/review", label: "Review" }] : []),
+        { to: "/about", label: "About" },
+        { to: "/contactUs", label: "Contact" },
+        { to: "/privacy", label: "Privacy" },
+      ];
+    }
+
+    return [];
+  }, [showAdmin, showMyOrders, showPartner, showProducts, showReview, showUser]);
+
+  const brandHref = showPartner ? "/partner" : "/";
+
   return (
-    <div className={`${navStyle.header} ${isFixed ? navStyle.fixed : ""}`}>
-      <nav className={navStyle.navbar} ref={navbarRef}>
-        <Link to="/">Home</Link>
-        <Link to="/about">About</Link>
-        <Link to="/privacy">Privacy</Link>
-        <Link to="/explore">Products</Link>
-        <Link to="/review">Review</Link>
-        <Link to="/my-orders">My Orders</Link>
-        {(auth.isUserLoggedIn || auth.isAdminLoggedIn) && (
+    <div className={navStyle.header}>
+      <div className={navStyle.brand}>
+        <Link to={brandHref} className={navStyle.brandLink} onClick={closeOverlays}>
+          Himachal Harvest
+        </Link>
+      </div>
+
+      <nav className={navStyle.navbar} ref={navbarRef} aria-label="Primary navigation">
+        {navItems.map((item) => (
+          <NavLink
+            key={item.to}
+            to={item.to}
+            onClick={closeOverlays}
+            className={({ isActive }) =>
+              `${navStyle.navLink} ${isActive ? navStyle.navLinkActive : ""}`
+            }
+          >
+            {item.label}
+          </NavLink>
+        ))}
+      </nav>
+
+      <div className={navStyle.actions}>
+        {showProducts ? (
+          <button
+            type="button"
+            className={navStyle.actionBtn}
+            onClick={toggleSearch}
+            aria-label="Search products"
+          >
+            Search
+          </button>
+        ) : null}
+
+        {showCart ? (
+          <button
+            type="button"
+            className={navStyle.actionBtn}
+            onClick={toggleCart}
+            aria-label="Open cart"
+          >
+            Cart
+            <span className={navStyle.badge} aria-label={`${cartItems.length} items in cart`}>
+              {cartItems.length}
+            </span>
+          </button>
+        ) : null}
+
+        {showAdmin ? (
+          <button
+            type="button"
+            className={navStyle.actionBtn}
+            onClick={toggleAdmin}
+            aria-label="Open admin menu"
+          >
+            Admin
+          </button>
+        ) : null}
+
+        <button
+          type="button"
+          className={`${navStyle.actionBtn} ${navStyle.menuBtn}`}
+          onClick={toggleMenu}
+          aria-label="Open menu"
+        >
+          Menu
+        </button>
+
+        {isLoggedIn && (
           <button type="button" className={navStyle.logoutBtn} onClick={handleLogout}>
             Logout
           </button>
-        )}
-      </nav>
-
-      <div className={navStyle.icons}>
-        <div
-          className={navStyle.search_icon}
-          id="search-btnn"
-          onClick={toggleSearch}
-        >
-          Search
-        </div>
-        <div className={navStyle.cart_icon} id="cart-btnn" onClick={toggleCart}>
-          Cart
-        </div>
-        <div
-          className={navStyle.menu_icon}
-          id={navStyle.menu_btnn}
-          onClick={toggleMenu}
-        >
-          Menu
-        </div>
-        {auth.isAdminLoggedIn && (
-          <div className={navStyle.Admin} id="ADMIN" onClick={toggleAdmin}>
-            Admin
-          </div>
         )}
       </div>
 
       <div className={navStyle.search_form} ref={searchRef}>
         <input type="search" id="search-box" placeholder="search here..." />
-        <label htmlFor="search-box" className={navStyle.search_icon}></label>
+        <label htmlFor="search-box" className={navStyle.searchLabel}>
+          Go
+        </label>
       </div>
 
       {/* CART ITEMS CONTAINER----- */}
-      <div className={navStyle.cart_items_container} ref={cartItemRef}>
+      <div
+        className={navStyle.cart_items_container}
+        ref={cartItemRef}
+        style={showCart ? undefined : { display: "none" }}
+      >
         <div className={navStyle.cart_item}>
           <img src={cartImage} alt="Loading..." />
           <span className="fas fa_time"></span>
@@ -146,10 +208,12 @@ export default function Navbar2() {
         </button>
       </div>
 
-      <div className={navStyle.ADMIN} ref={adminRef}>
+      <div className={navStyle.ADMIN} ref={adminRef} style={showAdmin ? undefined : { display: "none" }}>
         <Link to="/admin">Add Product</Link>
         <Link to="/admin/manage-products">Manage Products</Link>
         <Link to="/admin/orders">Orders</Link>
+        <Link to="/admin/delivery">Delivery</Link>
+        <Link to="/admin/users">Users</Link>
       </div>
     </div>
   );

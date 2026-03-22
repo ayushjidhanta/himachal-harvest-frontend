@@ -4,19 +4,23 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(6px);
     display: flex;
     justify-content: center;
     align-items: center;
+    padding: 16px;
+    z-index: 1000;
 }
 
 .modal_dialog {
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
-    max-width: 500px;
+    background: rgba(255, 255, 255, 0.92);
+    padding: 18px;
+    border-radius: 18px;
+    max-width: 560px;
     width: 100%;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    box-shadow: 0 22px 55px rgba(0, 0, 0, 0.20);
 }
 
 .modal_content {
@@ -31,12 +35,21 @@
     border-bottom: 1px solid #e5e5e5;
     padding-bottom: 10px;
     margin-bottom: 20px;
+    gap: 12px;
 }
 
 .modal_title {
     margin: 0;
     font-size: 1.5rem;
     font-weight: bold;
+    color: #0b3d1e;
+}
+
+.modal_subtitle {
+    margin-top: 4px;
+    color: rgba(18, 48, 29, 0.72);
+    font-size: 14px;
+    line-height: 1.45;
 }
 
 .close_modal_btn {
@@ -44,6 +57,15 @@
     border: none;
     font-size: 1.5rem;
     cursor: pointer;
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    color: rgba(18, 48, 29, 0.78);
+    background: rgba(0, 0, 0, 0.03);
+}
+
+.close_modal_btn:hover {
+    background: rgba(0, 0, 0, 0.06);
 }
 
 .modal_body {
@@ -57,26 +79,98 @@
     flex-direction: column;
 }
 
-    .form_group input,
-    .form_group textarea {
-        width: 100%;
-        padding: 10px;
-        font-size: 1rem;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        outline: none;
-        transition: border-color 0.3s ease;
-    }
+.label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 900;
+    color: rgba(11, 61, 30, 0.84);
+}
 
-        .form_group input:focus,
-        .form_group textarea:focus {
-            border-color: #007bff;
-        }
+.rowBetween {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 10px;
+}
 
-    .form_group textarea {
-        resize: vertical;
-        min-height: 100px;
-    }
+.counter {
+    font-size: 12px;
+    font-weight: 900;
+    color: rgba(18, 48, 29, 0.60);
+}
+
+.form_group input,
+.form_group textarea {
+    width: 100%;
+    padding: 10px 12px;
+    font-size: 1rem;
+    border: 1px solid rgba(0, 0, 0, 0.14);
+    border-radius: 12px;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    background: rgba(255, 255, 255, 0.95);
+}
+
+.form_group input:focus,
+.form_group textarea:focus {
+    border-color: rgba(33, 150, 83, 0.55);
+    box-shadow: 0 0 0 4px rgba(33, 150, 83, 0.16);
+}
+
+.form_group textarea {
+    resize: vertical;
+    min-height: 120px;
+    line-height: 1.55;
+}
+
+.hint {
+    margin-top: 8px;
+    color: rgba(18, 48, 29, 0.66);
+    font-size: 12px;
+    line-height: 1.45;
+}
+
+.stars {
+    display: inline-flex;
+    gap: 8px;
+    align-items: center;
+    padding: 8px 10px;
+    border-radius: 14px;
+    background: rgba(33, 150, 83, 0.08);
+    border: 1px solid rgba(33, 150, 83, 0.16);
+    width: fit-content;
+}
+
+.starLabel {
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+}
+
+.starLabel input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.star {
+    font-size: 22px;
+    line-height: 1;
+    color: rgba(11, 107, 51, 0.9);
+}
+
+.srOnly {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
 
 .modal_footer {
     display: flex;

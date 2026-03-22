@@ -1,26 +1,175 @@
-.contact_container {
-    margin-top: 10px;
-    display: flex;
-    justify-content: center; 
-    align-items: center; 
-    height: 400px; 
-    width: auto; 
-    background: linear-gradient(150deg, #c2f6d8 19.52%, #2dcb72 84.22%);
-    /* background-image: url('https://img.freepik.com/free-photo/top-view-blue-monday-concept-composition-with-telephone_23-2149139104.jpg?w=996'); */
-    background-size: cover; 
-    background-position: center; 
-    background-repeat: no-repeat; 
-    margin-top: 10px;
+.page {
+  min-height: 100dvh;
+  background: linear-gradient(180deg, #f3fff7 0%, #ffffff 42%, #f6fbff 100%);
+}
+
+.hero {
+  position: relative;
+  padding: clamp(28px, 5vw, 64px) 16px;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(900px 280px at 20% 20%, rgba(33, 150, 83, 0.30) 0%, rgba(33, 150, 83, 0.00) 55%),
+    radial-gradient(900px 280px at 80% 10%, rgba(7, 214, 95, 0.22) 0%, rgba(7, 214, 95, 0.00) 55%),
+    linear-gradient(135deg, rgba(7, 214, 95, 0.16) 0%, rgba(33, 150, 83, 0.10) 45%, rgba(255, 255, 255, 0.0) 100%);
+  pointer-events: none;
+}
+
+.heroInner {
+  position: relative;
+  width: min(1100px, 100%);
+  margin: 0 auto;
+  padding: clamp(18px, 3vw, 28px);
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.70);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 22px 55px rgba(0, 0, 0, 0.10);
+}
+
+.title {
+  margin: 0 0 10px 0;
+  font-size: clamp(28px, 2.6vw, 40px);
+  color: #0b3d1e;
+  letter-spacing: 0.2px;
+}
+
+.subtitle {
+  margin: 0 0 16px 0;
+  color: rgba(18, 48, 29, 0.80);
+  font-size: 16px;
+  line-height: 1.6;
+  max-width: 75ch;
+}
+
+.ctaRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  margin: 14px 0 18px 0;
+}
+
+.ctaItem {
+  min-width: 210px;
+}
+
+.waBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 44px;
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(33, 150, 83, 0.20);
+  color: #0b6b33;
+  font-weight: 900;
+  text-decoration: none;
+}
+
+.waBtn:hover {
+  background: rgba(33, 150, 83, 0.12);
+}
+
+.infoGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.infoCard {
+  padding: 14px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.08);
+}
+
+.infoLabel {
+  font-weight: 900;
+  color: rgba(18, 48, 29, 0.70);
+  font-size: 12px;
+  letter-spacing: 0.2px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.infoValue {
+  display: inline-block;
+  font-weight: 900;
+  color: #0b3d1e;
+  text-decoration: none;
+  padding: 8px 10px;
+  border-radius: 12px;
+  background: rgba(33, 150, 83, 0.08);
+  border: 1px solid rgba(33, 150, 83, 0.14);
+}
+
+.infoValue:hover {
+  background: rgba(33, 150, 83, 0.12);
+}
+
+.infoValueMuted {
+  display: inline-block;
+  font-weight: 900;
+  color: rgba(18, 48, 29, 0.45);
+  padding: 8px 10px;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.03);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.infoHint {
+  margin-top: 10px;
+  color: rgba(18, 48, 29, 0.70);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.main {
+  width: min(1100px, 100%);
+  margin: 0 auto;
+  padding: 0 16px clamp(36px, 5vw, 64px) 16px;
+}
+
+.formWrap {
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 18px 46px rgba(0, 0, 0, 0.10);
+  padding: clamp(18px, 3vw, 28px);
+}
+
+.formHeader {
+  margin-bottom: 10px;
+}
+
+.formTitle {
+  margin: 0 0 6px 0;
+  color: #0b6b33;
+  font-size: 22px;
+  letter-spacing: 0.2px;
+}
+
+.formSubtitle {
+  margin: 0 0 4px 0;
+  color: rgba(18, 48, 29, 0.78);
+  line-height: 1.6;
+  max-width: 90ch;
+}
+
+@media (max-width: 960px) {
+  .infoGrid {
+    grid-template-columns: 1fr;
   }
-  
-  .contact_button, .call_button {
-    min-width: 200px;
-    padding: 10px 20px;
+
+  .ctaItem {
+    min-width: 100%;
   }
-  
-  .contact_button:hover, .call_button:hover {
-    opacity: 0.8; 
-  }
-  
-  
-  
+}

@@ -121,3 +121,47 @@
   border-radius: 12px;
   margin-bottom: 1rem;
 }
+
+.keyCard {
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.keyRow {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.keyInput {
+  border: 1px solid rgba(0, 0, 0, 0.16);
+  border-radius: 12px;
+  padding: 0.65rem 0.75rem;
+  min-width: 260px;
+  outline: none;
+}
+
+.keyHint {
+  color: #666;
+  font-size: 0.85rem;
+}
+
+.keyBtn {
+  border: 1px solid rgba(0, 0, 0, 0.16);
+  background: #fff;
+  border-radius: 12px;
+  padding: 0.6rem 0.8rem;
+  cursor: pointer;
+  font-weight: 900;
+}
+
+.keyBtnPrimary {
+  background: #111;
+  color: #fff;
+  border-color: #111;
+}

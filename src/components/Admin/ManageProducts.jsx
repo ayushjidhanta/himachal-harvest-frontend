@@ -6,11 +6,12 @@ import Navbar2 from "../Home/Navbar2";
 import Footer from "../../assets/Footer/Footer";
 import { SpinnerHimachalHarvest } from "../../assets/Spinner/Spinner";
 import { AuthContext } from "../../context/auth-context";
+import AdminKeyCard from "./AdminKeyCard";
+import { getAdminKey } from "../../service/adminKey";
 import layout from "./AdminLayout.module.css";
 import styles from "./ManageProducts.module.css";
 
 const API_URL = process.env.REACT_APP_API_URL;
-const ADMIN_KEY = process.env.REACT_APP_ADMIN_API_KEY;
 
 const formatINR = (value) =>
   new Intl.NumberFormat("en-IN", { maximumFractionDigits: 0 }).format(
@@ -19,6 +20,8 @@ const formatINR = (value) =>
 
 export default function ManageProducts() {
   const auth = useContext(AuthContext);
+
+  const [adminKey, setAdminKey] = useState(getAdminKey());
 
   const [products, setProducts] = useState([]);
   const [query, setQuery] = useState("");
@@ -97,7 +100,7 @@ export default function ManageProducts() {
 
     try {
       const headers = {};
-      if (ADMIN_KEY) headers["x-admin-key"] = ADMIN_KEY;
+      if (adminKey) headers["x-admin-key"] = adminKey;
 
       const payload = {
         url: editForm.url,
@@ -129,8 +132,8 @@ export default function ManageProducts() {
     } catch (err) {
       const status = err?.response?.status;
       const msg = err?.response?.data?.error?.message || err?.message || "Failed to update product";
-      if ((status === 401 || status === 403) && !ADMIN_KEY) {
-        setError(`${status}: ${msg}. Missing REACT_APP_ADMIN_API_KEY.`);
+      if ((status === 401 || status === 403) && !adminKey) {
+        setError(`${status}: ${msg}. Missing Admin API Key (backend ADMIN_API_KEY is likely set).`);
       } else {
         setError(status ? `${status}: ${msg}` : msg);
       }
@@ -189,6 +192,12 @@ export default function ManageProducts() {
               <Link className={layout.tab} to="/admin/orders">
                 Orders
               </Link>
+              <Link className={layout.tab} to="/admin/delivery">
+                Delivery
+              </Link>
+              <Link className={layout.tab} to="/admin/users">
+                Users
+              </Link>
             </div>
           </div>
         </div>
@@ -198,6 +207,8 @@ export default function ManageProducts() {
         <div className={layout.container + " " + layout.scroll}>
           {banner ? <div className={layout.banner}>{banner}</div> : null}
           {error ? <div className={layout.alert}>{error}</div> : null}
+
+          <AdminKeyCard adminKey={adminKey} setAdminKey={setAdminKey} />
 
           <div className={layout.card}>
             <div className={styles.controls}>

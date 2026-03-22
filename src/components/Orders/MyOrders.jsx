@@ -1,8 +1,11 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useContext, useEffect, useMemo, useState } from "react";
 import axios from "axios";
+import { Link } from "react-router-dom";
 import Navbar2 from "../Home/Navbar2";
 import Footer from "../../assets/Footer/Footer";
 import { SpinnerHimachalHarvest } from "../../assets/Spinner/Spinner";
+import OrderMap from "../Maps/OrderMap";
+import { AuthContext } from "../../context/auth-context";
 import "./MyOrders.css";
 
 const API_URL = process.env.REACT_APP_API_URL;
@@ -28,46 +31,62 @@ const formatDateTime = (value) => {
   }
 };
 
+const openMapsUrl = (loc) => {
+  if (!loc) return null;
+  const lat = Number(loc.lat);
+  const lng = Number(loc.lng);
+  if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+  return `https://www.google.com/maps?q=${lat},${lng}`;
+};
+
 export default function MyOrders() {
-  const [email, setEmail] = useState("");
+  const auth = useContext(AuthContext);
+  const email = String(auth?.user?.email || localStorage.getItem("lastOrderEmail") || "").trim();
+
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    const last = localStorage.getItem("lastOrderEmail") || "";
-    if (last) setEmail(last);
-  }, []);
-
   const fetchOrders = async () => {
     setError("");
+
     if (!API_URL) {
       setError("Missing REACT_APP_API_URL");
       return;
     }
 
-    const e = email.trim();
-    if (!e) {
-      setError("Please enter your email to view orders.");
+    if (!email) {
+      setError("Missing account email. Please sign in again.");
       return;
     }
 
     setLoading(true);
     try {
-      const { data } = await axios.get(`${API_URL}/orders`, { params: { email: e } });
+      const { data } = await axios.get(`${API_URL}/orders`, { params: { email } });
       setOrders(Array.isArray(data?.data) ? data.data : []);
-      localStorage.setItem("lastOrderEmail", e);
+      localStorage.setItem("lastOrderEmail", email);
     } catch (err) {
-      const msg = err?.response?.data?.error?.message || err?.response?.data?.message || err?.message || "Failed to load orders";
+      const msg =
+        err?.response?.data?.error?.message ||
+        err?.response?.data?.message ||
+        err?.message ||
+        "Failed to load orders";
       setError(msg);
     } finally {
       setLoading(false);
     }
   };
 
+  useEffect(() => {
+    fetchOrders();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [email]);
+
   const sortedOrders = useMemo(() => {
     const list = Array.isArray(orders) ? [...orders] : [];
-    list.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    list.sort(
+      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    );
     return list;
   }, [orders]);
 
@@ -80,7 +99,9 @@ export default function MyOrders() {
         <div className="myOrdersContainer myOrdersHeaderInner">
           <div>
             <h1 className="myOrdersTitle">My Orders</h1>
-            <div className="myOrdersSub">Track your order status and shipping updates</div>
+            <div className="myOrdersSub">
+              Track your order status, delivery location, and shipping updates
+            </div>
           </div>
         </div>
       </div>
@@ -89,16 +110,9 @@ export default function MyOrders() {
         <div className="myOrdersContainer myOrdersScroll">
           <div className="card">
             <div className="controls">
-              <input
-                className="input"
-                type="email"
-                placeholder="Enter your email (used at checkout)"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
               <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap" }}>
                 <button className="btn btnPrimary" type="button" onClick={fetchOrders}>
-                  Load orders
+                  Refresh
                 </button>
                 <button className="btn btnSecondary" type="button" onClick={() => setOrders([])}>
                   Clear
@@ -115,7 +129,7 @@ export default function MyOrders() {
             ))}
             {!loading && sortedOrders.length === 0 ? (
               <div className="card" style={{ color: "#666" }}>
-                No orders found for this email.
+                No orders found.
               </div>
             ) : null}
           </div>
@@ -132,6 +146,12 @@ export default function MyOrders() {
 function OrderCard({ order }) {
   const isCancelled = order.status === "cancelled";
   const activeIndex = STATUS_STEPS.indexOf(order.status);
+
+  const deliveryLoc = order?.deliveryLocation;
+  const shipmentLoc = order?.shipment?.lastKnownLocation;
+
+  const mapsDelivery = openMapsUrl(deliveryLoc);
+  const mapsShipment = openMapsUrl(shipmentLoc);
 
   return (
     <div className="orderCard">
@@ -158,7 +178,12 @@ function OrderCard({ order }) {
         <div className="progress">
           <div className="progressRow">
             {STATUS_STEPS.map((s, idx) => {
-              const cls = idx < activeIndex ? "step stepDone" : idx === activeIndex ? "step stepActive" : "step";
+              const cls =
+                idx < activeIndex
+                  ? "step stepDone"
+                  : idx === activeIndex
+                    ? "step stepActive"
+                    : "step";
               return (
                 <span className={cls} key={s}>
                   {s}
@@ -177,11 +202,42 @@ function OrderCard({ order }) {
           {order?.shippingAddress?.city}, {order?.shippingAddress?.state} {order?.shippingAddress?.zip}
         </div>
 
+        {(mapsDelivery || mapsShipment) ? (
+          <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap" }}>
+            {mapsDelivery ? (
+              <a className="link" href={mapsDelivery} target="_blank" rel="noreferrer">
+                Open delivery location
+              </a>
+            ) : null}
+            {mapsShipment ? (
+              <a className="link" href={mapsShipment} target="_blank" rel="noreferrer">
+                Open last known location
+              </a>
+            ) : null}
+          </div>
+        ) : null}
+
+        <OrderMap deliveryLocation={deliveryLoc} shipmentLocation={shipmentLoc} small />
+
         {order?.tracking?.trackingUrl ? (
           <div>
             <a className="link" href={order.tracking.trackingUrl} target="_blank" rel="noreferrer">
-              Open tracking link
+              Open courier tracking
             </a>
+          </div>
+        ) : null}
+
+        <div>
+          <Link className="link" to={`/track/${order.orderId}`}>
+            Open detailed tracking
+          </Link>
+        </div>
+
+        {order?.deliveryShareToken ? (
+          <div>
+            <Link className="link" to={`/live/${order.deliveryShareToken}`}>
+              Live delivery partner location
+            </Link>
           </div>
         ) : null}
 

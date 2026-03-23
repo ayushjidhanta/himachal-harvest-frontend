@@ -143,7 +143,7 @@ export default function App() {
           />
 
           <Route
-            path="/admin"
+            path="/admin/products"
             element={
               <RequireRole allow={["admin"]}>
                 <AdminFirstPage />
@@ -151,7 +151,7 @@ export default function App() {
             }
           />
           <Route
-            path="/admin/manage-products"
+            path="/admin/listing"
             element={
               <RequireRole allow={["admin"]}>
                 <ManageProducts />

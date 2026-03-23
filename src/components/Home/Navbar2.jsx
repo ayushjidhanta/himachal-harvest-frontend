@@ -1,4 +1,4 @@
-import React, { useRef, useContext, useMemo } from "react";
+import React, { useRef, useContext, useMemo, useState } from "react";
 import { NavLink, Link, useNavigate } from "react-router-dom";
 import navStyle from "./Nav2.module.css";
 import { useSelector } from "react-redux";
@@ -11,10 +11,11 @@ const normalizeRole = (role) => {
   return r;
 };
 
-const formatINR = (value) =>
+const formatINR = (value) => {
   new Intl.NumberFormat("en-IN", { maximumFractionDigits: 0 }).format(
     Number(value || 0)
   );
+}
 
 export default function Navbar2() {
   const navigate = useNavigate();
@@ -26,8 +27,9 @@ export default function Navbar2() {
   const showManager = role === "manager" || auth.isManagerLoggedIn || auth.isPartnerLoggedIn;
   const isLoggedIn = showUser || showAdmin || showManager;
   const isGuest = !isLoggedIn;
+  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
 
-  const showCart = isGuest || showUser || showAdmin;
+  const showCart = showUser;
   const showProducts = isGuest || showUser || showAdmin;
   const showMyOrders = showUser || showAdmin;
 
@@ -35,6 +37,7 @@ export default function Navbar2() {
     navbarRef?.current?.classList?.remove(navStyle.active);
     cartItemRef?.current?.classList?.remove(navStyle.active);
     adminRef?.current?.classList?.remove(navStyle.active);
+    setIsProfileMenuOpen(false);
     overlayRef?.current?.classList?.remove(navStyle.active);
   };
 
@@ -78,22 +81,17 @@ export default function Navbar2() {
     navigate("/signin");
   };
 
-  const goToProfile = () => {
-    closeOverlays();
-    if (showAdmin) navigate("/admin");
-    else if (showManager) navigate("/manager");
-    else navigate("/my-orders");
-  };
-
   const navbarRef = useRef(null);
   const cartItemRef = useRef(null);
   const adminRef = useRef(null);
   const overlayRef = useRef(null);
+  const profileBtnRef = useRef(null);
 
   const toggleMenu = () => {
     navbarRef.current?.classList.toggle(navStyle.active);
     cartItemRef.current?.classList.remove(navStyle.active);
     adminRef.current?.classList.remove(navStyle.active);
+    setIsProfileMenuOpen(false);
     overlayRef.current?.classList.remove(navStyle.active);
   };
 
@@ -101,7 +99,21 @@ export default function Navbar2() {
     adminRef.current?.classList.toggle(navStyle.active);
     navbarRef.current?.classList.remove(navStyle.active);
     cartItemRef.current?.classList.remove(navStyle.active);
+    setIsProfileMenuOpen(false);
     overlayRef.current?.classList.remove(navStyle.active);
+  };
+
+  const toggleProfileMenu = () => {
+    const willOpen = !isProfileMenuOpen;
+    closeOverlays();
+    if (!willOpen) return;
+    setIsProfileMenuOpen(true);
+    overlayRef.current?.classList.add(navStyle.active);
+  };
+
+  const navigateAndClose = (to) => {
+    closeOverlays();
+    navigate(to);
   };
 
   const { itemCount, subtotal } = useMemo(() => {
@@ -111,24 +123,50 @@ export default function Navbar2() {
     return { itemCount: totalCount, subtotal: total };
   }, [cartItems]);
 
+  const profileMenuItems = useMemo(() => {
+    if (showAdmin) {
+      return [
+        { label: "Dashboard", to: "/admin" },
+      ];
+    }
+
+    if (showManager) {
+      return [
+        { label: "Dashboard", to: "/manager" },
+      ];
+    }
+
+    if (showUser) {
+      return [
+        ...(showMyOrders ? [{ label: "My Orders", to: "/my-orders" }] : []),
+      ];
+    }
+
+    return [];
+  }, [showAdmin, showManager, showMyOrders, showProducts, showUser]);
+
   const navItems = useMemo(() => {
     if (showManager) {
       return [
         { to: "/manager", label: "Dashboard" },
-        { to: "/contactUs", label: "Contact" },
-        { to: "/privacy", label: "Privacy" },
       ];
     }
 
-    if (showUser || showAdmin) {
+    if (showAdmin) {
       return [
-        { to: "/", label: "Home" },
-        ...(showProducts ? [{ to: "/explore", label: "Products" }] : []),
-        ...(showMyOrders ? [{ to: "/my-orders", label: "My Orders" }] : []),
+        { to: "/admin/products", label: "Products" },
+        { to: "/admin/listing", label: "Listing" },
+        { to: "/admin/orders", label: "Orders" },
+        { to: "/admin/delivery", label: "Delivery" },
+        { to: "/admin/users", label: "Users" },
         { to: "/review", label: "Review" },
-        { to: "/about", label: "About" },
+      ];
+    }
+
+    if (showUser) {
+      return [
+        ...(showProducts ? [{ to: "/explore", label: "Products" }] : []),
         { to: "/contactUs", label: "Contact" },
-        { to: "/privacy", label: "Privacy" },
       ];
     }
 
@@ -139,20 +177,21 @@ export default function Navbar2() {
       { to: "/about", label: "About" },
       { to: "/contactUs", label: "Contact" },
       { to: "/privacy", label: "Privacy" },
+      { to: "/return", label: "Return Policy" },
       { to: "/signin", label: "Sign In", mobileOnly: true },
     ];
-  }, [showAdmin, showManager, showMyOrders, showProducts, showUser]);
+  }, [showAdmin, showManager, showProducts, showUser]);
 
   const brandHref = showManager ? "/manager" : "/";
   const username = String(auth?.user?.username || "").trim();
   const avatarLetter = username ? username[0].toUpperCase() : "U";
+  const roleLabel = showAdmin ? "Admin" : showManager ? "Manager" : showUser ? "User" : "Guest";
 
   return (
     <div className={navStyle.header}>
       <div className={navStyle.brand}>
         <Link to={brandHref} className={navStyle.brandLink} onClick={closeOverlays}>
           <img className={navStyle.brandLogo} src="/logo/header-logo.png" alt="Himachal Harvest" />
-          <span className={navStyle.srOnly}>Himachal Harvest</span>
         </Link>
       </div>
 
@@ -169,16 +208,6 @@ export default function Navbar2() {
             {item.label}
           </NavLink>
         ))}
-
-        {isLoggedIn && (
-          <button
-            type="button"
-            className={`${navStyle.navLink} ${navStyle.navButton} ${navStyle.mobileOnly}`}
-            onClick={handleLogout}
-          >
-            Logout
-          </button>
-        )}
       </nav>
 
       <div className={navStyle.actions}>
@@ -209,7 +238,11 @@ export default function Navbar2() {
           <button
             type="button"
             className={navStyle.profileBtn}
-            onClick={goToProfile}
+            onClick={toggleProfileMenu}
+            ref={profileBtnRef}
+            aria-haspopup="menu"
+            aria-expanded={isProfileMenuOpen ? "true" : "false"}
+            aria-controls="profile-menu"
             aria-label="Open profile"
             title={username || "Profile"}
           >
@@ -218,17 +251,6 @@ export default function Navbar2() {
             </span>
           </button>
         )}
-
-        {showAdmin ? (
-          <button
-            type="button"
-            className={navStyle.actionBtn}
-            onClick={toggleAdmin}
-            aria-label="Open admin menu"
-          >
-            Admin
-          </button>
-        ) : null}
 
         <button
           type="button"
@@ -244,20 +266,58 @@ export default function Navbar2() {
           <span className={navStyle.srOnly}>Menu</span>
         </button>
 
-        {isLoggedIn && (
-          <button
-            type="button"
-            className={`${navStyle.logoutBtn} ${navStyle.hideOnMobile}`}
-            onClick={handleLogout}
-          >
-            Logout
-          </button>
-        )}
+
       </div>
 
       <div className={navStyle.overlay} ref={overlayRef} onClick={closeOverlays} aria-hidden="true" />
 
-      {/* CART ITEMS CONTAINER----- */}
+      <div
+        id="profile-menu"
+        className={`${navStyle.profileMenu} ${isProfileMenuOpen ? navStyle.active : ""}`}
+        role="menu"
+        aria-label="Account menu"
+        onKeyDown={(e) => {
+          if (e.key === "Escape") {
+            e.preventDefault();
+            closeOverlays();
+            profileBtnRef.current?.focus?.();
+          }
+        }}
+      >
+        <div className={navStyle.profileMenuHeader}>
+          <span className={navStyle.profileMenuAvatar} aria-hidden="true">
+            {avatarLetter}
+          </span>
+          <div className={navStyle.profileMenuMeta}>
+            <div className={navStyle.profileMenuName}>{username || "Account"}</div>
+            <div className={navStyle.profileMenuRole}>{roleLabel}</div>
+          </div>
+        </div>
+
+        <div className={navStyle.profileMenuList}>
+          {profileMenuItems.map((item) => (
+            <button
+              key={item.to}
+              type="button"
+              className={navStyle.profileMenuItem}
+              role="menuitem"
+              onClick={() => navigateAndClose(item.to)}
+            >
+              {item.label}
+            </button>
+          ))}
+
+          <button
+            type="button"
+            className={`${navStyle.profileMenuItem} ${navStyle.profileMenuDanger}`}
+            role="menuitem"
+            onClick={handleLogout}
+          >
+            Sign out
+          </button>
+        </div>
+      </div>
+
       <div
         className={navStyle.cart_items_container}
         ref={cartItemRef}
@@ -329,14 +389,6 @@ export default function Navbar2() {
             </button>
           </div>
         </div>
-      </div>
-
-      <div className={navStyle.ADMIN} ref={adminRef} style={showAdmin ? undefined : { display: "none" }}>
-        <Link to="/admin">Add Product</Link>
-        <Link to="/admin/manage-products">Manage Products</Link>
-        <Link to="/admin/orders">Orders</Link>
-        <Link to="/admin/delivery">Delivery</Link>
-        <Link to="/admin/users">Users</Link>
       </div>
     </div>
   );

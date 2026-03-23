@@ -55,7 +55,7 @@ function Footer() {
           <ul>
             {["FAQ", "Help Desk", "Forums"].map((item, index) => {
               return (
-                <li>
+                <li key={index}>
                   <a href="/" key={item}>
                     {item}
                   </a>
@@ -70,7 +70,7 @@ function Footer() {
             {["Terms Of Use", "Privacy Policy", "Cookie Policy"].map(
               (item, index) => {
                 return (
-                  <li>
+                  <li key={index}>
                     <a href="/" key={item}>
                       {item}
                     </a>

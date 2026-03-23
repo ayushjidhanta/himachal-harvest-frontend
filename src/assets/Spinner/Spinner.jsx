@@ -1,6 +1,6 @@
 import React from "react";
 import styles from "./Spinner.module.css";
-import spinnerHH from "../Images/logo.gif";
+import spinnerHH from "../Images/loader.png";
 const Spinner = ({ show }) => {
   return show ? (
     <div className={styles.overlay}>
@@ -14,7 +14,9 @@ export default Spinner;
 const SpinnerHimachalHarvest = ({ show }) => {
   return show ? (
     <div className={styles.overlay}>
-      <img className={styles.spinnerHH} src={spinnerHH} alt="Loading..." />
+      <div className={styles.hhWrap} aria-label="Loading">
+        <img className={styles.spinnerHH} src={spinnerHH} alt="" aria-hidden="true" />
+      </div>
     </div>
   ) : null;
 };

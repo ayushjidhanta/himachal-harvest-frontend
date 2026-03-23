@@ -23,13 +23,33 @@ import DeliveryPartner from "./components/Delivery/DeliveryPartner";
 import PartnerDashboard from "./components/Partner/PartnerDashboard";
 import AdminUsers from "./components/Admin/AdminUsers";
 import { clearAuthUser, getAuthUser } from "./service/authUser";
-import RequireRole from "./app/RequireRole";
+
+
+import { useContext } from "react";
+import { useLocation } from "react-router-dom";
 
 const normalizeRole = (role) => {
   const r = String(role || "").toLowerCase();
   if (r === "partner") return "manager";
   return r;
 };
+
+
+export function RequireRole({ allow = [], children }) {
+  const auth = useContext(AuthContext);
+  const location = useLocation();
+  const role = normalizeRole(auth?.role) || "guest";
+
+  console.log("RequireRole", { role, allow });
+
+  if (allow.includes(role)) return children;
+
+  return <Navigate to="/signin" replace state={{ from: location }} />;
+}
+
+
+
+
 
 export default function App() {
   const [role, setRole] = useState("");
@@ -45,7 +65,7 @@ export default function App() {
     try {
       localStorage.removeItem("role");
       localStorage.removeItem("persist:root");
-    } catch {}
+    } catch { }
     clearAuthUser();
     setRole("");
     setUser(null);

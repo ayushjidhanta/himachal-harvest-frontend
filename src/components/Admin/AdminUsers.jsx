@@ -12,7 +12,7 @@ import styles from "./AdminUsers.module.css";
 
 const API_URL = process.env.REACT_APP_API_URL;
 
-const ROLES = ["User", "Partner", "Admin"];
+const ROLES = ["User", "Manager", "Admin"];
 
 export default function AdminUsers() {
   const auth = useContext(AuthContext);
@@ -128,7 +128,7 @@ export default function AdminUsers() {
           <div className={layout.headerInner}>
             <div>
               <h1 className={layout.title}>Users</h1>
-              <div className={layout.sub}>Assign roles (User / Partner / Admin). Users must logout/login to see changes.</div>
+              <div className={layout.sub}>Assign roles (User / Manager / Admin). Users must logout/login to see changes.</div>
             </div>
             <div className={layout.tabs}>
               <Link className={layout.tab} to="/admin">Add Product</Link>

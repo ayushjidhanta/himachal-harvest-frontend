@@ -95,14 +95,6 @@ export default function Navbar2() {
     overlayRef.current?.classList.remove(navStyle.active);
   };
 
-  const toggleAdmin = () => {
-    adminRef.current?.classList.toggle(navStyle.active);
-    navbarRef.current?.classList.remove(navStyle.active);
-    cartItemRef.current?.classList.remove(navStyle.active);
-    setIsProfileMenuOpen(false);
-    overlayRef.current?.classList.remove(navStyle.active);
-  };
-
   const toggleProfileMenu = () => {
     const willOpen = !isProfileMenuOpen;
     closeOverlays();
@@ -143,7 +135,7 @@ export default function Navbar2() {
     }
 
     return [];
-  }, [showAdmin, showManager, showMyOrders, showProducts, showUser]);
+  }, [showAdmin, showManager, showMyOrders, showUser]);
 
   const navItems = useMemo(() => {
     if (showManager) {

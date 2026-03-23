@@ -8,10 +8,7 @@ function Footer() {
   // Social Icons
   const social_icons = {
     facebook: "https://www.facebook.com/",
-    linkedin: "https://www.linkedin.com/",
     instagram: "https://www.instagram.com/",
-    twitter: "https://www.twitter.com/",
-    github: "https://www.github.com/",
     google: "https://www.google.com/",
   };
     const companyLinks = [

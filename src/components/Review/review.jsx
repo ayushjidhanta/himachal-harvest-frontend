@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import Navbar2 from "../Home/Navbar2";
 import Style from "./review.module.css";
 import Model from "../../assets/Model/model";
@@ -9,7 +9,9 @@ import { SpinnerHimachalHarvest } from "../../assets/Spinner/Spinner";
 import AlertDialog from "../../assets/AlertDialog/AlertDialog";
 import responseStatus from "../../enum/responseStatus";
 import { AuthContext } from "../../context/auth-context";
-function Review() {
+
+
+export default function Review() {
     const [reviews, setReviews] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [spinner, setSpinner] = useState(false);
@@ -64,7 +66,7 @@ function Review() {
         try {
             setSpinner(true);
             const response = await Reviews(apiActions.POST, newReview);
-             
+
             if (response.status === responseStatus.SUCCESS) {
                 showAlert(
                     "Review Sent Successfully"
@@ -139,7 +141,6 @@ function Review() {
                 alertMessage={alertDialog.message}
                 handlerFunction={alertDialogHandler}
             />
-
             <div className={Style.page}>
                 <header className={Style.hero}>
                     <div className={Style.heroInner}>
@@ -221,6 +222,4 @@ function Review() {
             </div>
         </>
     );
-}
-
-export default Review;
+};

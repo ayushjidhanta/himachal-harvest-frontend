@@ -1,37 +1,55 @@
-import "./App.css";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
-// Pages and Components
-import Home from "../components/Home/Home";
-import Cart from "../components/Cart/Cart";
-import About from "../components/About/About";
-import Review from "../components/Review/review";
-import Explore from "../components/Explore/Explore";
-import SignIn from "../components/Auth/SignIn/SignIn";
-import Checkout from "../components/Checkout/checkout";
-import Privacy from "../components/PrivacyPolicy/privacy";
-import NotFound from "../assets/PageNotFound/PageNotFound";
+import Home from "./components/Home/Home";
+import Cart from "./components/Cart/Cart";
+import About from "./components/About/About";
+import Review from "./components/Review/review";
+import Explore from "./components/Explore/Explore";
+import SignIn from "./components/Auth/SignIn/SignIn";
+import Checkout from "./components/Checkout/checkout";
+import Privacy from "./components/PrivacyPolicy/privacy";
+import NotFound from "./assets/PageNotFound/PageNotFound";
 import { useCallback, useEffect, useState } from "react";
-import { AuthContext } from "../context/auth-context";
-import SignUp from "../components/Auth/SignUp/SignUp";
-import ContactUs from "../components/ContactUs/ContactUs";
-import MyOrders from "../components/Orders/MyOrders";
-import TrackOrder from "../components/Orders/TrackOrder";
-import LiveTracking from "../components/Orders/LiveTracking";
-import AdminFirstPage from "../components/Admin/AdminFirstPage";
-import ManageProducts from "../components/Admin/ManageProducts";
-import AdminOrders from "../components/Admin/AdminOrders";
-import AdminDelivery from "../components/Admin/AdminDelivery";
-import DeliveryPartner from "../components/Delivery/DeliveryPartner";
-import PartnerDashboard from "../components/Partner/PartnerDashboard";
-import AdminUsers from "../components/Admin/AdminUsers";
-import { clearAuthUser, getAuthUser } from "../service/authUser";
-import RequireRole from "./RequireRole";
+import { AuthContext } from "./context/auth-context";
+import SignUp from "./components/Auth/SignUp/SignUp";
+import ContactUs from "./components/ContactUs/ContactUs";
+import MyOrders from "./components/Orders/MyOrders";
+import TrackOrder from "./components/Orders/TrackOrder";
+import LiveTracking from "./components/Orders/LiveTracking";
+import AdminFirstPage from "./components/Admin/AdminFirstPage";
+import ManageProducts from "./components/Admin/ManageProducts";
+import AdminOrders from "./components/Admin/AdminOrders";
+import AdminDelivery from "./components/Admin/AdminDelivery";
+import DeliveryPartner from "./components/Delivery/DeliveryPartner";
+import PartnerDashboard from "./components/Partner/PartnerDashboard";
+import AdminUsers from "./components/Admin/AdminUsers";
+import { clearAuthUser, getAuthUser } from "./service/authUser";
+
+
+import { useContext } from "react";
+import { useLocation } from "react-router-dom";
 
 const normalizeRole = (role) => {
   const r = String(role || "").toLowerCase();
   if (r === "partner") return "manager";
   return r;
 };
+
+
+export function RequireRole({ allow = [], children }) {
+  const auth = useContext(AuthContext);
+  const location = useLocation();
+  const role = normalizeRole(auth?.role) || "guest";
+
+  console.log("RequireRole", { role, allow });
+
+  if (allow.includes(role)) return children;
+
+  return <Navigate to="/signin" replace state={{ from: location }} />;
+}
+
+
+
+
 
 export default function App() {
   const [role, setRole] = useState("");
@@ -47,7 +65,7 @@ export default function App() {
     try {
       localStorage.removeItem("role");
       localStorage.removeItem("persist:root");
-    } catch {}
+    } catch { }
     clearAuthUser();
     setRole("");
     setUser(null);
@@ -125,7 +143,7 @@ export default function App() {
           />
 
           <Route
-            path="/admin"
+            path="/admin/products"
             element={
               <RequireRole allow={["admin"]}>
                 <AdminFirstPage />
@@ -133,7 +151,7 @@ export default function App() {
             }
           />
           <Route
-            path="/admin/manage-products"
+            path="/admin/listing"
             element={
               <RequireRole allow={["admin"]}>
                 <ManageProducts />

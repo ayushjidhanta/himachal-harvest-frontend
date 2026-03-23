@@ -1,5 +1,5 @@
 import "./App.css";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 // Pages and Components
 import Home from "../components/Home/Home";
 import Cart from "../components/Cart/Cart";
@@ -25,13 +25,20 @@ import DeliveryPartner from "../components/Delivery/DeliveryPartner";
 import PartnerDashboard from "../components/Partner/PartnerDashboard";
 import AdminUsers from "../components/Admin/AdminUsers";
 import { clearAuthUser, getAuthUser } from "../service/authUser";
+import RequireRole from "./RequireRole";
+
+const normalizeRole = (role) => {
+  const r = String(role || "").toLowerCase();
+  if (r === "partner") return "manager";
+  return r;
+};
 
 export default function App() {
   const [role, setRole] = useState("");
   const [user, setUser] = useState(null);
 
   const login = useCallback((nextRole, nextUser) => {
-    const r = String(nextRole || localStorage.getItem("role") || "").toLowerCase();
+    const r = normalizeRole(nextRole || localStorage.getItem("role") || "");
     setRole(r);
     setUser(nextUser || getAuthUser());
   }, []);
@@ -51,74 +58,11 @@ export default function App() {
   }, [login]);
 
   const isAdminLoggedIn = role === "admin";
-  const isPartnerLoggedIn = role === "partner";
+  const isManagerLoggedIn = role === "manager";
   const isUserLoggedIn = role === "user";
+  const isPartnerLoggedIn = role === "partner";
+  const isLoggedIn = isAdminLoggedIn || isManagerLoggedIn || isUserLoggedIn || isPartnerLoggedIn;
 
-  let routes;
-  if (isAdminLoggedIn) {
-    routes = (
-      <Routes>
-        <Route exact path="/" element={<Home />} />
-        <Route exact path="*" element={<Home />} />
-        <Route exact path="/about" element={<About />} />
-        <Route exact path="/cart" element={<Cart />} />
-        <Route exact path="/explore" element={<Explore />} />
-        <Route exact path="/checkout" element={<Checkout />} />
-        <Route exact path="/my-orders" element={<MyOrders />} />
-        <Route exact path="/track/:orderId" element={<TrackOrder />} />
-        <Route exact path="/live/:token" element={<LiveTracking />} />
-        <Route exact path="/delivery/:token" element={<DeliveryPartner />} />
-        <Route exact path="/privacy" element={<Privacy />} />
-        <Route exact path="/review" element={<Review />} />
-        <Route exact path="/contactUs" element={<ContactUs/>}/>
-        <Route exact path="/admin" element={<AdminFirstPage />} />
-        <Route exact path="/admin/manage-products" element={<ManageProducts />} />
-        <Route exact path="/admin/orders" element={<AdminOrders />} />
-        <Route exact path="/admin/delivery" element={<AdminDelivery />} />
-        <Route exact path="/admin/users" element={<AdminUsers />} />
-      </Routes>
-    );
-  } else if (isPartnerLoggedIn) {
-    routes = (
-      <Routes>
-        <Route exact path="/partner" element={<PartnerDashboard />} />
-        <Route exact path="/delivery/:token" element={<DeliveryPartner />} />
-        <Route exact path="/live/:token" element={<LiveTracking />} />
-        <Route exact path="/privacy" element={<Privacy />} />
-        <Route exact path="/contactUs" element={<ContactUs/>}/>
-        <Route exact path="*" element={<PartnerDashboard />} />
-      </Routes>
-    );
-  } else if (isUserLoggedIn) {
-    routes = (
-      <Routes>
-        <Route exact path="/" element={<Home />} />
-        <Route exact path="*" element={<Home />} />
-        <Route exact path="/about" element={<About />} />
-        <Route exact path="/cart" element={<Cart />} />
-        <Route exact path="/explore" element={<Explore />} />
-        <Route exact path="/checkout" element={<Checkout />} />
-        <Route exact path="/my-orders" element={<MyOrders />} />
-        <Route exact path="/track/:orderId" element={<TrackOrder />} />
-        <Route exact path="/live/:token" element={<LiveTracking />} />
-        <Route exact path="/privacy" element={<Privacy />} />
-        <Route exact path="/review" element={<Review />} />
-        <Route exact path="/contactUs" element={<ContactUs/>}/>
-      </Routes>
-    );
-  } else {
-    routes = (
-      <Routes>
-        <Route exact path="/signin" element={<SignIn />} />
-        <Route exact path="/signup" element={<SignUp />} />
-        <Route exact path="/" element={<SignIn />} />
-        <Route exact path="/contactUs" element={<ContactUs/>}/>
-        <Route exact path="/live/:token" element={<LiveTracking />} />
-        <Route exact path="/delivery/:token" element={<DeliveryPartner />} />
-        <Route exact path="*" element={<NotFound />} />
-      </Routes>
-    );
-  }
   return (
     <AuthContext.Provider
       value={{
@@ -126,12 +70,114 @@ export default function App() {
         user,
         isUserLoggedIn,
         isAdminLoggedIn,
-        isPartnerLoggedIn,
+        isManagerLoggedIn: isManagerLoggedIn || isPartnerLoggedIn,
+        isPartnerLoggedIn: isManagerLoggedIn || isPartnerLoggedIn,
         login: login,
         logout: logout,
       }}
     >
-      <BrowserRouter>{routes}</BrowserRouter>;
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/explore" element={<Explore />} />
+          <Route path="/cart" element={<Cart />} />
+          <Route path="/privacy" element={<Privacy />} />
+          <Route path="/contactUs" element={<ContactUs />} />
+
+          <Route path="/signin" element={isLoggedIn ? <Navigate to="/" replace /> : <SignIn />} />
+          <Route path="/signup" element={isLoggedIn ? <Navigate to="/" replace /> : <SignUp />} />
+
+          <Route path="/live/:token" element={<LiveTracking />} />
+          <Route path="/delivery/:token" element={<DeliveryPartner />} />
+
+          <Route
+            path="/checkout"
+            element={
+              <RequireRole allow={["user", "admin"]}>
+                <Checkout />
+              </RequireRole>
+            }
+          />
+          <Route
+            path="/my-orders"
+            element={
+              <RequireRole allow={["user", "admin"]}>
+                <MyOrders />
+              </RequireRole>
+            }
+          />
+          <Route
+            path="/track/:orderId"
+            element={
+              <RequireRole allow={["user", "admin"]}>
+                <TrackOrder />
+              </RequireRole>
+            }
+          />
+          <Route
+            path="/review"
+            element={
+              <RequireRole allow={["guest", "user", "admin"]}>
+                <Review />
+              </RequireRole>
+            }
+          />
+
+          <Route
+            path="/admin"
+            element={
+              <RequireRole allow={["admin"]}>
+                <AdminFirstPage />
+              </RequireRole>
+            }
+          />
+          <Route
+            path="/admin/manage-products"
+            element={
+              <RequireRole allow={["admin"]}>
+                <ManageProducts />
+              </RequireRole>
+            }
+          />
+          <Route
+            path="/admin/orders"
+            element={
+              <RequireRole allow={["admin"]}>
+                <AdminOrders />
+              </RequireRole>
+            }
+          />
+          <Route
+            path="/admin/delivery"
+            element={
+              <RequireRole allow={["admin"]}>
+                <AdminDelivery />
+              </RequireRole>
+            }
+          />
+          <Route
+            path="/admin/users"
+            element={
+              <RequireRole allow={["admin"]}>
+                <AdminUsers />
+              </RequireRole>
+            }
+          />
+
+          <Route
+            path="/manager"
+            element={
+              <RequireRole allow={["manager"]}>
+                <PartnerDashboard />
+              </RequireRole>
+            }
+          />
+          <Route path="/partner" element={<Navigate to="/manager" replace />} />
+
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </BrowserRouter>
     </AuthContext.Provider>
   );
 }

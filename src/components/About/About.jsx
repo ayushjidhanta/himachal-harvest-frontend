@@ -49,7 +49,7 @@ export default function About() {
           </p>
         </section>
 
-        <TeamInstagram usernames={["bhupenderhere", "ayushjidhanta"]} />
+        <TeamInstagram usernames={["ayushjidhanta", "_abhishek_1110", "bhupenderhere"]} />
       </main>
       <Footer />
     </div>

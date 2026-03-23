@@ -29,7 +29,7 @@ export default function PartnerDashboard() {
       <div className="partnerHeader">
         <div className="partnerContainer partnerHeaderInner">
           <div>
-            <h1 className="partnerTitle">Partner</h1>
+            <h1 className="partnerTitle">Manager</h1>
             <div className="partnerSub">Share live location for assigned deliveries</div>
           </div>
         </div>
@@ -38,7 +38,7 @@ export default function PartnerDashboard() {
       <div className="partnerBody">
         <div className="partnerContainer partnerScroll">
           <div className="partnerCard">
-            <div className="partnerLabel">Paste your Partner link</div>
+            <div className="partnerLabel">Paste your delivery link</div>
             <input
               className="partnerInput"
               placeholder="https://.../delivery/<token>  (or just paste token)"

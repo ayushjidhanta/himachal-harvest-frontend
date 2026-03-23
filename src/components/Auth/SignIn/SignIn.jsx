@@ -1,7 +1,7 @@
 // Inbuilt React Packages
 import React, { useContext, useState } from "react";
 import styles from "./SignIn.module.css";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router-dom";
 // Custom React Packages
 import { signIn } from "../../../service/AuthService/api";
 import { setAuthUser } from "../../../service/authUser";
@@ -16,8 +16,15 @@ import { SpinnerHimachalHarvest } from "../../../assets/Spinner/Spinner";
 // contextAPI
 import { AuthContext } from "../../../context/auth-context";
 
+const normalizeRole = (role) => {
+  const r = String(role || "").toLowerCase();
+  if (r === "partner") return "manager";
+  return r;
+};
+
 const SignIn = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const auth = useContext(AuthContext);
 
   const [credentials, setCredentials] = useState({
@@ -70,7 +77,7 @@ const SignIn = () => {
       // }
 
       if (response.data.user_authenticated) {
-        const role = String(response?.data?.role || "User").toLowerCase();
+        const role = normalizeRole(response?.data?.role || "User");
         const u = response?.data?.user || {};
         const authUser = {
           username: u.username || credentials.username,
@@ -85,8 +92,13 @@ const SignIn = () => {
         auth.login(role);
         showAlert(response.data.message);
         setTimeout(() => {
+          const from = location?.state?.from?.pathname;
+          if (from && from !== "/signin" && from !== "/signup") {
+            navigate(from, { replace: true });
+            return;
+          }
           if (role === "admin") navigate("/admin");
-          else if (role === "partner") navigate("/partner");
+          else if (role === "manager") navigate("/manager");
           else navigate("/");
         }, 2000);
       } else {

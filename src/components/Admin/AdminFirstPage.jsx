@@ -1,14 +1,14 @@
 
 import React, { useContext, useMemo, useState } from "react";
-import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
 import Navbar2 from "../Home/Navbar2";
 import { AuthContext } from "../../context/auth-context";
 import AdminKeyCard from "./AdminKeyCard";
 import { getAdminKey } from "../../service/adminKey";
 import styles from "./AdminFirstPage.module.css";
-
-const API_URL = process.env.REACT_APP_API_URL;
+import { createProduct } from "../../features/products/productApi";
+import { loadProductCatalog } from "../../features/products/productActions";
 
 const fileToDataUrl = (file) =>
   new Promise((resolve, reject) => {
@@ -21,6 +21,7 @@ const fileToDataUrl = (file) =>
 export default function AdminFirstPage() {
   const auth = useContext(AuthContext);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const [adminKey, setAdminKey] = useState(getAdminKey());
 
@@ -79,11 +80,6 @@ export default function AdminFirstPage() {
     setSuccess(null);
     setError(null);
 
-    if (!API_URL) {
-      setError("Missing REACT_APP_API_URL in frontend env");
-      return;
-    }
-
     const shortTitle = form.shortTitle.trim();
     const longTitle = form.longTitle.trim();
     const mrp = Number(form.mrp);
@@ -137,9 +133,11 @@ export default function AdminFirstPage() {
       const headers = {};
       if (adminKey) headers["x-admin-key"] = adminKey;
 
-      const { data } = await axios.post(`${API_URL}/products`, payload, { headers });
+      const { data } = await createProduct(payload, headers);
 
       const createdId = data?.data?.id || data?.data?._id || "";
+      // A mutation is rare: refresh the shared persisted catalogue immediately.
+      dispatch(loadProductCatalog({ force: true })).catch(() => {});
       setSuccess({ order: createdId, raw: data });
       resetAll();
     } catch (err) {
@@ -199,10 +197,10 @@ export default function AdminFirstPage() {
           </div>
 
           <div className={styles.row} style={{ justifyContent: "flex-start", marginBottom: "1rem" }}>
-            <Link className={`${styles.button} ${styles.secondary}`} to="/admin">
+            <Link className={`${styles.button} ${styles.secondary}`} to="/admin/products">
               Add Product
             </Link>
-            <Link className={`${styles.button} ${styles.secondary}`} to="/admin/manage-products">
+            <Link className={`${styles.button} ${styles.secondary}`} to="/admin/listing">
               Manage Products
             </Link>
             <Link className={`${styles.button} ${styles.secondary}`} to="/admin/orders">

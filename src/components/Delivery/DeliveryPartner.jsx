@@ -22,6 +22,7 @@ export default function DeliveryPartner() {
   const [banner, setBanner] = useState("");
 
   const shipmentLoc = info?.shipment?.lastKnownLocation;
+  const deliveryLoc = info?.deliveryLocation;
 
   const fetchInfo = useCallback(async () => {
     if (!API_URL) {
@@ -146,8 +147,17 @@ export default function DeliveryPartner() {
                 <div className="small" style={{ marginTop: "0.25rem" }}>Status: {info.status}</div>
 
                 <div style={{ marginTop: "0.9rem" }}>
-                  <OrderMap shipmentLocation={shipmentLoc} small />
+                  <div className="small" style={{ marginBottom: "0.45rem" }}>
+                    Customer destination and your shared location
+                  </div>
+                  <OrderMap deliveryLocation={deliveryLoc} shipmentLocation={shipmentLoc} small />
                 </div>
+
+                {info?.shippingAddress ? (
+                  <div className="small" style={{ marginTop: "0.65rem" }}>
+                    Deliver to: {info.shippingAddress.addressLine1}, {info.shippingAddress.city}, {info.shippingAddress.state} {info.shippingAddress.zip}
+                  </div>
+                ) : null}
 
                 <div className="actions">
                   <button className="btn btnPrimary" type="button" onClick={startSharing} disabled={sharing}>

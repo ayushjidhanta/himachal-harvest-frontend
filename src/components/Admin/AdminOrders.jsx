@@ -1,5 +1,5 @@
 import React, { useCallback, useContext, useEffect, useMemo, useState } from "react";
-import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import Navbar2 from "../Home/Navbar2";
 import Footer from "../../assets/Footer/Footer";
@@ -10,8 +10,11 @@ import AdminKeyCard from "./AdminKeyCard";
 import { getAdminKey } from "../../service/adminKey";
 import layout from "./AdminLayout.module.css";
 import styles from "./AdminOrders.module.css";
-
-const API_URL = process.env.REACT_APP_API_URL;
+import { fetchDeliveryPartners, updateAdminOrder } from "../../features/orders/orderApi";
+import { applyAdminOrderUpdate, loadAdminOrderCatalog } from "../../features/orders/orderActions";
+import { ORDER_STATUS_OPTIONS } from "../../features/orders/orderConstants";
+import { selectAdminOrderCatalog } from "../../features/orders/orderSelectors";
+import Toast, { useToast } from "../common/Toast/Toast";
 
 const formatINR = (value) =>
   new Intl.NumberFormat("en-IN", { maximumFractionDigits: 0 }).format(
@@ -34,26 +37,19 @@ const openMapsUrl = (loc) => {
   return `https://www.google.com/maps?q=${lat},${lng}`;
 };
 
-const STATUS_OPTIONS = [
-  "created",
-  "confirmed",
-  "dispatched",
-  "out_for_delivery",
-  "delivered",
-  "cancelled",
-];
-
 export default function AdminOrders() {
   const auth = useContext(AuthContext);
+  const dispatch = useDispatch();
+  const { toast, showToast, dismissToast } = useToast();
+  const { orders, isFetching, error: catalogError } = useSelector(selectAdminOrderCatalog);
 
   const [adminKey, setAdminKey] = useState(getAdminKey());
 
-  const [orders, setOrders] = useState([]);
   const [query, setQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [banner, setBanner] = useState("");
+  const [deliveryPartners, setDeliveryPartners] = useState([]);
 
   const headers = useMemo(() => {
     const h = {};
@@ -61,17 +57,10 @@ export default function AdminOrders() {
     return h;
   }, [adminKey]);
 
-  const fetchOrders = useCallback(async () => {
-    if (!API_URL) {
-      setError("Missing REACT_APP_API_URL");
-      return;
-    }
-
-    setLoading(true);
+  const fetchOrders = useCallback(async ({ force = false } = {}) => {
     setError("");
     try {
-      const { data } = await axios.get(`${API_URL}/orders/admin`, { headers });
-      setOrders(Array.isArray(data?.data) ? data.data : []);
+      await dispatch(loadAdminOrderCatalog({ headers, force }));
     } catch (err) {
       const status = err?.response?.status;
       const msg =
@@ -83,14 +72,26 @@ export default function AdminOrders() {
       } else {
         setError(status ? `${status}: ${msg}` : msg);
       }
-    } finally {
-      setLoading(false);
     }
-  }, [headers, adminKey]);
+  }, [dispatch, headers, adminKey]);
 
   useEffect(() => {
     fetchOrders();
   }, [fetchOrders]);
+
+  useEffect(() => {
+    let active = true;
+    fetchDeliveryPartners(headers)
+      .then(({ data }) => {
+        if (active) setDeliveryPartners(Array.isArray(data?.data) ? data.data : []);
+      })
+      .catch((err) => {
+        if (active) setError(err?.response?.data?.error?.message || "Failed to load delivery partners");
+      });
+    return () => {
+      active = false;
+    };
+  }, [headers]);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -105,23 +106,17 @@ export default function AdminOrders() {
   }, [orders, query, statusFilter]);
 
   const updateOrder = async (orderId, payload) => {
-    if (!API_URL) return;
     setBanner("");
     setError("");
 
     try {
-      const { data } = await axios.patch(
-        `${API_URL}/orders/admin/${orderId}`,
-        payload,
-        { headers }
-      );
+      const { data } = await updateAdminOrder(orderId, payload, headers);
       const updated = data?.data;
       if (updated) {
-        setOrders((prev) =>
-          prev.map((o) => (o.orderId === updated.orderId ? updated : o))
-        );
+        dispatch(applyAdminOrderUpdate(updated));
       }
       setBanner(`Updated order ${orderId}`);
+      showToast(`Order ${orderId} updated.`, "success");
     } catch (err) {
       const status = err?.response?.status;
       const msg =
@@ -133,6 +128,7 @@ export default function AdminOrders() {
       } else {
         setError(status ? `${status}: ${msg}` : msg);
       }
+      showToast(msg, "error");
     }
   };
 
@@ -167,7 +163,8 @@ export default function AdminOrders() {
   return (
     <div className={layout.shell}>
       <Navbar2 />
-      <SpinnerHimachalHarvest show={loading} />
+      <SpinnerHimachalHarvest show={isFetching} />
+      <Toast toast={toast} onDismiss={dismissToast} />
 
       <div className={layout.header}>
         <div className={layout.container}>
@@ -179,10 +176,10 @@ export default function AdminOrders() {
               </div>
             </div>
             <div className={layout.tabs}>
-              <Link className={layout.tab} to="/admin">
+              <Link className={layout.tab} to="/admin/products">
                 Add Product
               </Link>
-              <Link className={layout.tab} to="/admin/manage-products">
+              <Link className={layout.tab} to="/admin/listing">
                 Manage Products
               </Link>
               <Link
@@ -205,7 +202,7 @@ export default function AdminOrders() {
       <div className={layout.body}>
         <div className={layout.container + " " + layout.scroll}>
           {banner ? <div className={layout.banner}>{banner}</div> : null}
-          {error ? <div className={layout.alert}>{error}</div> : null}
+          {error || catalogError ? <div className={layout.alert}>{error || catalogError}</div> : null}
 
           <AdminKeyCard adminKey={adminKey} setAdminKey={setAdminKey} />
 
@@ -224,7 +221,7 @@ export default function AdminOrders() {
                 onChange={(e) => setStatusFilter(e.target.value)}
               >
                 <option value="">All statuses</option>
-                {STATUS_OPTIONS.map((s) => (
+                {ORDER_STATUS_OPTIONS.map((s) => (
                   <option key={s} value={s}>
                     {s}
                   </option>
@@ -233,7 +230,7 @@ export default function AdminOrders() {
               <button
                 className={`${styles.btn} ${styles.btnSecondary}`}
                 type="button"
-                onClick={fetchOrders}
+                onClick={() => fetchOrders({ force: true })}
               >
                 Refresh
               </button>
@@ -242,7 +239,7 @@ export default function AdminOrders() {
 
           <div className={styles.grid}>
             {filtered.map((o) => (
-              <OrderCard key={o.orderId} order={o} onUpdate={updateOrder} />
+              <OrderCard key={o.orderId} order={o} onUpdate={updateOrder} deliveryPartners={deliveryPartners} />
             ))}
 
             {filtered.length === 0 ? (
@@ -261,7 +258,7 @@ export default function AdminOrders() {
   );
 }
 
-function OrderCard({ order, onUpdate }) {
+function OrderCard({ order, onUpdate, deliveryPartners }) {
   const [status, setStatus] = useState(order.status || "created");
   const [carrier, setCarrier] = useState(order?.tracking?.carrier || "");
   const [trackingNumber, setTrackingNumber] = useState(
@@ -269,6 +266,7 @@ function OrderCard({ order, onUpdate }) {
   );
   const [trackingUrl, setTrackingUrl] = useState(order?.tracking?.trackingUrl || "");
   const [adminNotes, setAdminNotes] = useState(order?.adminNotes || "");
+  const [deliveryPartnerUserId, setDeliveryPartnerUserId] = useState(String(order?.deliveryPartner?.userId || ""));
 
   const [shipmentText, setShipmentText] = useState(order?.shipment?.lastKnownText || "");
   const [shipLat, setShipLat] = useState(
@@ -283,6 +281,10 @@ function OrderCard({ order, onUpdate }) {
   );
 
   const isCancelled = order.status === "cancelled";
+
+  useEffect(() => {
+    setDeliveryPartnerUserId(String(order?.deliveryPartner?.userId || ""));
+  }, [order?.deliveryPartner?.userId]);
 
   const deliveryLoc = order?.deliveryLocation;
   const shipmentLocFromState =
@@ -310,6 +312,7 @@ function OrderCard({ order, onUpdate }) {
       status,
       tracking: { carrier, trackingNumber, trackingUrl },
       adminNotes,
+      deliveryPartner: { userId: deliveryPartnerUserId || null },
     };
 
     const lat = shipLat.trim() ? Number(shipLat) : undefined;
@@ -402,7 +405,7 @@ function OrderCard({ order, onUpdate }) {
           <div className={styles.form}>
             <div className={styles.row2}>
               <select className={styles.select} value={status} onChange={(e) => setStatus(e.target.value)}>
-                {STATUS_OPTIONS.map((s) => (
+                {ORDER_STATUS_OPTIONS.map((s) => (
                   <option key={s} value={s}>
                     {s}
                   </option>
@@ -415,6 +418,25 @@ function OrderCard({ order, onUpdate }) {
                 placeholder="Carrier (e.g., Delhivery)"
               />
             </div>
+
+            <div className={styles.sectionTitle} style={{ marginTop: "0.5rem" }}>
+              Delivery partner
+            </div>
+            <select
+              className={styles.select}
+              value={deliveryPartnerUserId}
+              onChange={(event) => setDeliveryPartnerUserId(event.target.value)}
+            >
+              <option value="">Unassigned</option>
+              {(deliveryPartners || []).map((partner) => (
+                <option key={partner._id} value={partner._id}>
+                  {partner.username} — {partner.email}
+                </option>
+              ))}
+            </select>
+            {order?.deliveryPartner?.username ? (
+              <div className={styles.meta}>Assigned to: {order.deliveryPartner.username}</div>
+            ) : null}
 
             <div className={styles.row2}>
               <input

@@ -51,3 +51,31 @@
   font-weight: 900;
 }
 
+.permissionRow td {
+  padding-top: 0;
+  background: #fafaf7;
+}
+
+.permissionTitle {
+  margin: 0.2rem 0 0.55rem;
+  color: #4b5563;
+  font-size: 0.82rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.permissions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem 1rem;
+}
+
+.permission {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: #1f2937;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 700;
+}

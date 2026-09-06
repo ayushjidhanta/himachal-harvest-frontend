@@ -3,30 +3,22 @@ import Navbar2 from "../Home/Navbar2";
 import "./Explore.css";
 import Products from "./Products";
 import { useDispatch, useSelector } from "react-redux";
-import { getProducts } from "../../redux/actions/productAction";
+import { loadProductCatalog } from "../../features/products/productActions";
+import { selectProductCatalog } from "../../features/products/productSelectors";
 import Footer from "../../assets/Footer/Footer";
 
 export default function Exploree() {
   const dispatch = useDispatch();
-  const { products, error } = useSelector((state) => state.getProducts);
+  const { products, error, isFetching } = useSelector(selectProductCatalog);
   const { cartItems } = useSelector((state) => state.cart);
   const [query, setQuery] = useState("");
   const [sortBy, setSortBy] = useState("featured");
   const [onlyDiscounted, setOnlyDiscounted] = useState(false);
   const [onlyInCart, setOnlyInCart] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const loading = Boolean(isFetching && !(products || []).length);
 
   useEffect(() => {
-    let mounted = true;
-    setLoading(true);
-    Promise.resolve(dispatch(getProducts()))
-      .catch(() => {})
-      .finally(() => {
-        if (mounted) setLoading(false);
-      });
-    return () => {
-      mounted = false;
-    };
+    dispatch(loadProductCatalog()).catch(() => {});
   }, [dispatch]);
 
   const filteredProducts = useMemo(() => {

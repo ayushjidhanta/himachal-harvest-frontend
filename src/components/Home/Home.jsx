@@ -12,7 +12,7 @@ import earthImage from "../../assets/Images/earth.png";
 import Navbar2 from "./Navbar2";
 
 const scrollDown = () => {
-  const nextSection = document.getElementById("home-card-slider");
+   const nextSection = document.getElementById("home-card-slider");
   if (nextSection) {
     nextSection.scrollIntoView({ behavior: "smooth", block: "start" });
     return;

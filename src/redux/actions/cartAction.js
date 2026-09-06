@@ -1,12 +1,9 @@
-import axios from "axios";
 import * as actionType from "../constants/cartConstants";
-
-const apiUrl = process.env.REACT_APP_API_URL;
+import { fetchProductById } from "../../features/products/productApi";
 
 export const addToCart = (id, quantity = 1) => async (dispatch) => {
   try {
-    if (!apiUrl) throw new Error("Missing REACT_APP_API_URL");
-    const { data } = await axios.get(`${apiUrl}/products/getProducts/${id}`);
+    const { data } = await fetchProductById(id);
 
     dispatch({
       type: actionType.ADD_TO_CART,

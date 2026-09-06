@@ -1,5 +1,5 @@
 import React, { useCallback, useContext, useEffect, useMemo, useState } from "react";
-import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import Navbar2 from "../Home/Navbar2";
 import Footer from "../../assets/Footer/Footer";
@@ -9,8 +9,9 @@ import AdminKeyCard from "./AdminKeyCard";
 import { getAdminKey } from "../../service/adminKey";
 import layout from "./AdminLayout.module.css";
 import styles from "./AdminDelivery.module.css";
-
-const API_URL = process.env.REACT_APP_API_URL;
+import { updateAdminOrder } from "../../features/orders/orderApi";
+import { applyAdminOrderUpdate, loadAdminOrderCatalog } from "../../features/orders/orderActions";
+import { selectAdminOrderCatalog } from "../../features/orders/orderSelectors";
 
 const buildPartnerUrl = (token) => {
   if (!token) return "";
@@ -32,12 +33,12 @@ const buildCustomerUrl = (token) => {
 
 export default function AdminDelivery() {
   const auth = useContext(AuthContext);
+  const dispatch = useDispatch();
+  const { orders, isFetching, error: catalogError } = useSelector(selectAdminOrderCatalog);
 
   const [adminKey, setAdminKey] = useState(getAdminKey());
 
-  const [orders, setOrders] = useState([]);
   const [query, setQuery] = useState("");
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [banner, setBanner] = useState("");
 
@@ -47,25 +48,16 @@ export default function AdminDelivery() {
     return h;
   }, [adminKey]);
 
-  const fetchOrders = useCallback(async () => {
-    if (!API_URL) {
-      setError("Missing REACT_APP_API_URL");
-      return;
-    }
-
-    setLoading(true);
+  const fetchOrders = useCallback(async ({ force = false } = {}) => {
     setError("");
     try {
-      const { data } = await axios.get(`${API_URL}/orders/admin`, { headers });
-      setOrders(Array.isArray(data?.data) ? data.data : []);
+      await dispatch(loadAdminOrderCatalog({ headers, force }));
     } catch (err) {
       const status = err?.response?.status;
       const msg = err?.response?.data?.error?.message || err?.message || "Failed to load orders";
       setError(status ? `${status}: ${msg}` : msg);
-    } finally {
-      setLoading(false);
     }
-  }, [headers]);
+  }, [dispatch, headers]);
 
   useEffect(() => {
     fetchOrders();
@@ -83,15 +75,14 @@ export default function AdminDelivery() {
   }, [orders, query]);
 
   const updateDeliveryPartner = async (orderId, payload) => {
-    if (!API_URL) return;
     setBanner("");
     setError("");
 
     try {
-      const { data } = await axios.patch(`${API_URL}/orders/admin/${orderId}`, payload, { headers });
+      const { data } = await updateAdminOrder(orderId, payload, headers);
       const updated = data?.data;
       if (updated) {
-        setOrders((prev) => prev.map((o) => (o.orderId === updated.orderId ? updated : o)));
+        dispatch(applyAdminOrderUpdate(updated));
       }
       setBanner(`Updated delivery for order ${orderId}`);
     } catch (err) {
@@ -145,20 +136,20 @@ export default function AdminDelivery() {
   return (
     <div className={layout.shell}>
       <Navbar2 />
-      <SpinnerHimachalHarvest show={loading} />
+      <SpinnerHimachalHarvest show={isFetching} />
 
       <div className={layout.header}>
         <div className={layout.container}>
           <div className={layout.headerInner}>
             <div>
-              <h1 className={layout.title}>Delivery</h1>
-              <div className={layout.sub}>Assign a delivery partner + share a location link</div>
+              <h1 className={layout.title}>Delivery Management</h1>
+              <div className={layout.sub}>Step 2: after assigning a Delivery Partner in Orders, generate and share live-tracking links here.</div>
             </div>
             <div className={layout.tabs}>
-              <Link className={layout.tab} to="/admin">
+              <Link className={layout.tab} to="/admin/products">
                 Add Product
               </Link>
-              <Link className={layout.tab} to="/admin/manage-products">
+              <Link className={layout.tab} to="/admin/listing">
                 Manage Products
               </Link>
               <Link className={layout.tab} to="/admin/orders">
@@ -178,7 +169,7 @@ export default function AdminDelivery() {
       <div className={layout.body}>
         <div className={layout.container + " " + layout.scroll}>
           {banner ? <div className={layout.banner}>{banner}</div> : null}
-          {error ? <div className={layout.alert}>{error}</div> : null}
+          {error || catalogError ? <div className={layout.alert}>{error || catalogError}</div> : null}
 
           <AdminKeyCard adminKey={adminKey} setAdminKey={setAdminKey} />
 
@@ -191,7 +182,7 @@ export default function AdminDelivery() {
                   onChange={(e) => setQuery(e.target.value)}
                 />
               </div>
-              <button className={`${styles.btn} ${styles.btnSecondary}`} type="button" onClick={fetchOrders}>
+              <button className={`${styles.btn} ${styles.btnSecondary}`} type="button" onClick={() => fetchOrders({ force: true })}>
                 Refresh
               </button>
             </div>
@@ -236,25 +227,14 @@ export default function AdminDelivery() {
 }
 
 function DeliveryRow({ order, onSave, onCopy }) {
-  const [name, setName] = useState(order?.deliveryPartner?.name || "");
-  const [phone, setPhone] = useState(order?.deliveryPartner?.phone || "");
-  const [whatsapp, setWhatsapp] = useState(order?.deliveryPartner?.whatsapp || "");
-
   const customerToken = order?.deliveryShareToken;
   const partnerToken = order?.deliveryUpdateToken;
+  const assignedPartner = order?.deliveryPartner?.username;
   const customerUrl = buildCustomerUrl(customerToken);
   const partnerUrl = buildPartnerUrl(partnerToken);
 
-  const save = (extra = {}) => {
-    onSave(order.orderId, {
-      deliveryPartner: {
-        name,
-        phone,
-        whatsapp,
-        ...extra,
-      },
-    });
-  };
+  const generateLinks = () => onSave(order.orderId, { deliveryPartner: { generateShareToken: true } });
+  const clearLinks = () => onSave(order.orderId, { deliveryPartner: { clearShareToken: true } });
 
   return (
     <tr>
@@ -274,30 +254,22 @@ function DeliveryRow({ order, onSave, onCopy }) {
         <span className={styles.badge}>{order.status}</span>
       </td>
       <td>
-        <div className={styles.field}>
-          <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Name" />
-          <input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="Phone" />
-          <input value={whatsapp} onChange={(e) => setWhatsapp(e.target.value)} placeholder="WhatsApp" />
-        </div>
-        <div className={styles.actions}>
-          <button className={`${styles.btn} ${styles.btnPrimary}`} type="button" onClick={() => save()}>
-            Save
-          </button>
-          <button
-            className={`${styles.btn} ${styles.btnSecondary}`}
-            type="button"
-            onClick={() => save({ generateShareToken: true })}
-          >
-            Generate links
-          </button>
-          <button
-            className={`${styles.btn} ${styles.btnDanger}`}
-            type="button"
-            onClick={() => save({ clearShareToken: true })}
-          >
-            Clear link
-          </button>
-        </div>
+        {assignedPartner ? (
+          <>
+            <div style={{ fontWeight: 900 }}>{assignedPartner}</div>
+            <div className={styles.small}>Assigned from Orders</div>
+            <div className={styles.actions}>
+              <button className={`${styles.btn} ${styles.btnPrimary}`} type="button" onClick={generateLinks}>
+                Generate links
+              </button>
+              <button className={`${styles.btn} ${styles.btnDanger}`} type="button" onClick={clearLinks}>
+                Clear links
+              </button>
+            </div>
+          </>
+        ) : (
+          <div className={styles.small}>No Delivery Partner assigned. Assign one from the Orders tab first.</div>
+        )}
       </td>
       <td>
         {customerToken || partnerToken ? (
@@ -343,7 +315,7 @@ function DeliveryRow({ order, onSave, onCopy }) {
             ) : null}
           </>
         ) : (
-          <div className={styles.small}>Generate links to let the delivery partner share live location and the customer view it.</div>
+          <div className={styles.small}>Generate links to let the assigned partner share live location and the customer view it.</div>
         )}
       </td>
     </tr>

@@ -18,6 +18,10 @@
 
 .partnerHeaderInner {
   padding: 1rem 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
 }
 
 .partnerTitle {
@@ -50,6 +54,20 @@
   border-radius: 16px;
   padding: 1rem;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+}
+
+.partnerCard + .partnerCard { margin-top: 0.9rem; }
+.partnerCardHeader { display: flex; justify-content: space-between; gap: 1rem; }
+.partnerStatus { align-self: flex-start; border-radius: 999px; padding: 0.3rem 0.55rem; background: #e8f5ec; color: #16794a; font-size: 0.8rem; font-weight: 900; }
+.partnerDetails { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; margin-top: 1rem; color: #374151; font-size: 0.92rem; line-height: 1.4; }
+.partnerDetails strong { color: #111; display: block; margin-bottom: 0.2rem; }
+.partnerDetails a { color: #155eef; font-weight: 700; }
+.partnerItems { margin-top: 1rem; padding-top: 0.8rem; border-top: 1px solid rgba(0, 0, 0, 0.08); color: #374151; font-size: 0.92rem; }
+.partnerAlert { margin-bottom: 0.9rem; padding: 0.8rem 1rem; border-radius: 12px; background: #fff0ef; color: #b42318; font-weight: 700; }
+
+@media (max-width: 600px) {
+  .partnerDetails { grid-template-columns: 1fr; }
+  .partnerHeaderInner { align-items: flex-start; }
 }
 
 .partnerLabel {
@@ -87,6 +105,11 @@
   background: #219653;
 }
 
+.partnerBtnNavigate {
+  background: #155eef;
+  text-decoration: none;
+}
+
 .partnerBtn:disabled {
   opacity: 0.6;
   cursor: not-allowed;
@@ -120,4 +143,3 @@
   color: #111;
   font-size: 0.9rem;
 }
-

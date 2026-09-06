@@ -24,6 +24,7 @@ import PartnerDashboard from "./components/Partner/PartnerDashboard";
 import AdminUsers from "./components/Admin/AdminUsers";
 import { clearAuthUser, getAuthUser } from "./service/authUser";
 import { normalizeUserRole, USER_ROLE } from "./constants/userRoles";
+import { MANAGER_PERMISSION, hasAnyManagerPermission, hasManagerPermission } from "./constants/managerPermissions";
 
 
 import { useContext } from "react";
@@ -42,6 +43,23 @@ export function RequireRole({ allow = [], children }) {
   if (allow.includes(role)) return children;
 
   return <Navigate to="/signin" replace state={{ from: location }} />;
+}
+
+function RequireOperationsAccess({ permissions, children }) {
+  const auth = useContext(AuthContext);
+  const location = useLocation();
+  if (auth?.isAdminLoggedIn) return children;
+  if (auth?.isManagerLoggedIn && hasAnyManagerPermission(auth.user, permissions)) return children;
+  return <Navigate to="/manager" replace state={{ from: location }} />;
+}
+
+function ManagerHome() {
+  const auth = useContext(AuthContext);
+  if (hasManagerPermission(auth?.user, MANAGER_PERMISSION.MANAGE_CATALOG)) return <Navigate to="/admin/products" replace />;
+  if (hasAnyManagerPermission(auth?.user, [MANAGER_PERMISSION.ASSIGN_DELIVERY_PARTNER, MANAGER_PERMISSION.UPDATE_ORDER_STATUS])) {
+    return <Navigate to="/admin/orders" replace />;
+  }
+  return <Navigate to="/" replace />;
 }
 
 
@@ -142,41 +160,41 @@ export default function App() {
           <Route
             path="/admin/products"
             element={
-              <RequireRole allow={["admin"]}>
+              <RequireOperationsAccess permissions={[MANAGER_PERMISSION.MANAGE_CATALOG]}>
                 <AdminFirstPage />
-              </RequireRole>
+              </RequireOperationsAccess>
             }
           />
-          <Route path="/admin" element={<Navigate to="/admin/products" replace />} />
+          <Route path="/admin" element={<ManagerHome />} />
           <Route
             path="/admin/listing"
             element={
-              <RequireRole allow={["admin"]}>
+              <RequireOperationsAccess permissions={[MANAGER_PERMISSION.MANAGE_CATALOG]}>
                 <ManageProducts />
-              </RequireRole>
+              </RequireOperationsAccess>
             }
           />
           <Route path="/admin/manage-products" element={<Navigate to="/admin/listing" replace />} />
           <Route
             path="/admin/orders"
             element={
-              <RequireRole allow={["admin"]}>
+              <RequireOperationsAccess permissions={[MANAGER_PERMISSION.ASSIGN_DELIVERY_PARTNER, MANAGER_PERMISSION.UPDATE_ORDER_STATUS]}>
                 <AdminOrders />
-              </RequireRole>
+              </RequireOperationsAccess>
             }
           />
           <Route
             path="/admin/delivery"
             element={
-              <RequireRole allow={["admin"]}>
+              <RequireOperationsAccess permissions={[MANAGER_PERMISSION.ASSIGN_DELIVERY_PARTNER]}>
                 <AdminDelivery />
-              </RequireRole>
+              </RequireOperationsAccess>
             }
           />
           <Route
             path="/admin/users"
             element={
-              <RequireRole allow={["admin"]}>
+              <RequireRole allow={["admin", "manager"]}>
                 <AdminUsers />
               </RequireRole>
             }
@@ -186,7 +204,7 @@ export default function App() {
             path="/manager"
             element={
               <RequireRole allow={["manager"]}>
-                <PartnerDashboard />
+                <ManagerHome />
               </RequireRole>
             }
           />

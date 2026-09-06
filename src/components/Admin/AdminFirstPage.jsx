@@ -1,14 +1,16 @@
 
 import React, { useContext, useMemo, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import Navbar2 from "../Home/Navbar2";
 import { AuthContext } from "../../context/auth-context";
 import AdminKeyCard from "./AdminKeyCard";
 import { getAdminKey } from "../../service/adminKey";
+import { getOperationsHeaders } from "../../service/operationsAuth";
 import styles from "./AdminFirstPage.module.css";
 import { createProduct } from "../../features/products/productApi";
 import { loadProductCatalog } from "../../features/products/productActions";
+import AdminNavigationTabs from "./AdminNavigationTabs";
 
 const fileToDataUrl = (file) =>
   new Promise((resolve, reject) => {
@@ -130,8 +132,7 @@ export default function AdminFirstPage() {
 
     setSubmitting(true);
     try {
-      const headers = {};
-      if (adminKey) headers["x-admin-key"] = adminKey;
+      const headers = getOperationsHeaders(adminKey);
 
       const { data } = await createProduct(payload, headers);
 
@@ -155,7 +156,7 @@ export default function AdminFirstPage() {
     }
   };
 
-  if (!auth?.isAdminLoggedIn) {
+  if (!auth?.isAdminLoggedIn && !auth?.isManagerLoggedIn) {
     return (
       <>
         <Navbar2 />
@@ -196,25 +197,9 @@ export default function AdminFirstPage() {
             </button>
           </div>
 
-          <div className={styles.row} style={{ justifyContent: "flex-start", marginBottom: "1rem" }}>
-            <Link className={`${styles.button} ${styles.secondary}`} to="/admin/products">
-              Add Product
-            </Link>
-            <Link className={`${styles.button} ${styles.secondary}`} to="/admin/listing">
-              Manage Products
-            </Link>
-            <Link className={`${styles.button} ${styles.secondary}`} to="/admin/orders">
-              Orders
-            </Link>
-            <Link className={`${styles.button} ${styles.secondary}`} to="/admin/delivery">
-              Delivery
-            </Link>
-            <Link className={`${styles.button} ${styles.secondary}`} to="/admin/users">
-              Users
-            </Link>
-          </div>
+          <AdminNavigationTabs active="products" />
 
-          <AdminKeyCard adminKey={adminKey} setAdminKey={setAdminKey} />
+          {auth?.isAdminLoggedIn ? <AdminKeyCard adminKey={adminKey} setAdminKey={setAdminKey} /> : null}
 
           <form onSubmit={submit}>
             <div className={styles.grid}>

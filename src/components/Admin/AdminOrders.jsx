@@ -1,6 +1,5 @@
 import React, { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
 import Navbar2 from "../Home/Navbar2";
 import Footer from "../../assets/Footer/Footer";
 import { SpinnerHimachalHarvest } from "../../assets/Spinner/Spinner";
@@ -15,6 +14,8 @@ import { applyAdminOrderUpdate, loadAdminOrderCatalog } from "../../features/ord
 import { ORDER_STATUS_OPTIONS } from "../../features/orders/orderConstants";
 import { selectAdminOrderCatalog } from "../../features/orders/orderSelectors";
 import Toast, { useToast } from "../common/Toast/Toast";
+import AdminNavigationTabs from "./AdminNavigationTabs";
+import { MANAGER_PERMISSION, hasManagerPermission } from "../../constants/managerPermissions";
 
 const formatINR = (value) =>
   new Intl.NumberFormat("en-IN", { maximumFractionDigits: 0 }).format(
@@ -50,12 +51,16 @@ export default function AdminOrders() {
   const [error, setError] = useState("");
   const [banner, setBanner] = useState("");
   const [deliveryPartners, setDeliveryPartners] = useState([]);
+  const canAssignDeliveryPartner = auth?.isAdminLoggedIn || hasManagerPermission(auth?.user, MANAGER_PERMISSION.ASSIGN_DELIVERY_PARTNER);
+  const canUpdateOrderStatus = auth?.isAdminLoggedIn || hasManagerPermission(auth?.user, MANAGER_PERMISSION.UPDATE_ORDER_STATUS);
 
+  const accessToken = auth?.user?.accessToken || "";
   const headers = useMemo(() => {
-    const h = {};
-    if (adminKey) h["x-admin-key"] = adminKey;
-    return h;
-  }, [adminKey]);
+    const nextHeaders = {};
+    if (adminKey) nextHeaders["x-admin-key"] = adminKey;
+    if (accessToken) nextHeaders.Authorization = `Bearer ${accessToken}`;
+    return nextHeaders;
+  }, [accessToken, adminKey]);
 
   const fetchOrders = useCallback(async ({ force = false } = {}) => {
     setError("");
@@ -80,6 +85,10 @@ export default function AdminOrders() {
   }, [fetchOrders]);
 
   useEffect(() => {
+    if (!canAssignDeliveryPartner) {
+      setDeliveryPartners([]);
+      return undefined;
+    }
     let active = true;
     fetchDeliveryPartners(headers)
       .then(({ data }) => {
@@ -91,7 +100,7 @@ export default function AdminOrders() {
     return () => {
       active = false;
     };
-  }, [headers]);
+  }, [canAssignDeliveryPartner, headers]);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -132,7 +141,7 @@ export default function AdminOrders() {
     }
   };
 
-  if (!auth?.isAdminLoggedIn) {
+  if (!auth?.isAdminLoggedIn && !auth?.isManagerLoggedIn) {
     return (
       <>
         <Navbar2 />
@@ -175,26 +184,7 @@ export default function AdminOrders() {
                 Update status + tracking + last known location
               </div>
             </div>
-            <div className={layout.tabs}>
-              <Link className={layout.tab} to="/admin/products">
-                Add Product
-              </Link>
-              <Link className={layout.tab} to="/admin/listing">
-                Manage Products
-              </Link>
-              <Link
-                className={`${layout.tab} ${layout.tabActive}`}
-                to="/admin/orders"
-              >
-                Orders
-              </Link>
-              <Link className={layout.tab} to="/admin/delivery">
-                Delivery
-              </Link>
-              <Link className={layout.tab} to="/admin/users">
-                Users
-              </Link>
-            </div>
+            <AdminNavigationTabs active="orders" />
           </div>
         </div>
       </div>
@@ -204,7 +194,7 @@ export default function AdminOrders() {
           {banner ? <div className={layout.banner}>{banner}</div> : null}
           {error || catalogError ? <div className={layout.alert}>{error || catalogError}</div> : null}
 
-          <AdminKeyCard adminKey={adminKey} setAdminKey={setAdminKey} />
+          {auth?.isAdminLoggedIn ? <AdminKeyCard adminKey={adminKey} setAdminKey={setAdminKey} /> : null}
 
           <div className={styles.controls}>
             <div className={styles.search}>
@@ -239,7 +229,14 @@ export default function AdminOrders() {
 
           <div className={styles.grid}>
             {filtered.map((o) => (
-              <OrderCard key={o.orderId} order={o} onUpdate={updateOrder} deliveryPartners={deliveryPartners} />
+              <OrderCard
+                key={o.orderId}
+                order={o}
+                onUpdate={updateOrder}
+                deliveryPartners={deliveryPartners}
+                canAssignDeliveryPartner={canAssignDeliveryPartner}
+                canUpdateOrderStatus={canUpdateOrderStatus}
+              />
             ))}
 
             {filtered.length === 0 ? (
@@ -258,7 +255,7 @@ export default function AdminOrders() {
   );
 }
 
-function OrderCard({ order, onUpdate, deliveryPartners }) {
+function OrderCard({ order, onUpdate, deliveryPartners, canAssignDeliveryPartner, canUpdateOrderStatus }) {
   const [status, setStatus] = useState(order.status || "created");
   const [carrier, setCarrier] = useState(order?.tracking?.carrier || "");
   const [trackingNumber, setTrackingNumber] = useState(
@@ -308,18 +305,19 @@ function OrderCard({ order, onUpdate, deliveryPartners }) {
   };
 
   const submit = () => {
-    const payload = {
-      status,
-      tracking: { carrier, trackingNumber, trackingUrl },
-      adminNotes,
-      deliveryPartner: { userId: deliveryPartnerUserId || null },
-    };
+    const payload = {};
+    if (canUpdateOrderStatus) {
+      payload.status = status;
+      payload.tracking = { carrier, trackingNumber, trackingUrl };
+      payload.adminNotes = adminNotes;
+    }
+    if (canAssignDeliveryPartner) payload.deliveryPartner = { userId: deliveryPartnerUserId || null };
 
     const lat = shipLat.trim() ? Number(shipLat) : undefined;
     const lng = shipLng.trim() ? Number(shipLng) : undefined;
     const text = shipmentText.trim();
 
-    if ((Number.isFinite(lat) && Number.isFinite(lng)) || text) {
+    if (canUpdateOrderStatus && ((Number.isFinite(lat) && Number.isFinite(lng)) || text)) {
       payload.shipment = {
         lastKnownLocation:
           Number.isFinite(lat) && Number.isFinite(lng) ? { lat, lng } : undefined,
@@ -403,7 +401,7 @@ function OrderCard({ order, onUpdate, deliveryPartners }) {
           </div>
 
           <div className={styles.form}>
-            <div className={styles.row2}>
+            {canUpdateOrderStatus ? <div className={styles.row2}>
               <select className={styles.select} value={status} onChange={(e) => setStatus(e.target.value)}>
                 {ORDER_STATUS_OPTIONS.map((s) => (
                   <option key={s} value={s}>
@@ -417,9 +415,9 @@ function OrderCard({ order, onUpdate, deliveryPartners }) {
                 onChange={(e) => setCarrier(e.target.value)}
                 placeholder="Carrier (e.g., Delhivery)"
               />
-            </div>
+            </div> : null}
 
-            <div className={styles.sectionTitle} style={{ marginTop: "0.5rem" }}>
+            {canAssignDeliveryPartner ? <><div className={styles.sectionTitle} style={{ marginTop: "0.5rem" }}>
               Delivery partner
             </div>
             <select
@@ -436,9 +434,9 @@ function OrderCard({ order, onUpdate, deliveryPartners }) {
             </select>
             {order?.deliveryPartner?.username ? (
               <div className={styles.meta}>Assigned to: {order.deliveryPartner.username}</div>
-            ) : null}
+            ) : null}</> : null}
 
-            <div className={styles.row2}>
+            {canUpdateOrderStatus ? <><div className={styles.row2}>
               <input
                 className={styles.input}
                 value={trackingNumber}
@@ -482,11 +480,12 @@ function OrderCard({ order, onUpdate, deliveryPartners }) {
               placeholder="Admin notes shown to customer..."
             />
 
-            <div className={styles.actions}>
+            </> : null}
+            {(canUpdateOrderStatus || canAssignDeliveryPartner) ? <div className={styles.actions}>
               <button className={`${styles.btn} ${styles.btnPrimary}`} type="button" onClick={submit}>
                 Save
               </button>
-            </div>
+            </div> : null}
           </div>
         </div>
       </div>

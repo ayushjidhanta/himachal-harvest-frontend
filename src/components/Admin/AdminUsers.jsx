@@ -1,12 +1,12 @@
 import React, { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import axios from "axios";
-import { Link } from "react-router-dom";
 import Navbar2 from "../Home/Navbar2";
 import Footer from "../../assets/Footer/Footer";
 import { SpinnerHimachalHarvest } from "../../assets/Spinner/Spinner";
 import { AuthContext } from "../../context/auth-context";
 import AdminKeyCard from "./AdminKeyCard";
 import { getAdminKey } from "../../service/adminKey";
+import AdminNavigationTabs from "./AdminNavigationTabs";
 import layout from "./AdminLayout.module.css";
 import styles from "./AdminUsers.module.css";
 import { MANAGER_PERMISSION_OPTIONS, USER_ROLE_OPTIONS } from "../../constants/userRoles";
@@ -24,12 +24,15 @@ export default function AdminUsers() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [banner, setBanner] = useState("");
+  const isAdmin = auth?.isAdminLoggedIn;
 
+  const accessToken = auth?.user?.accessToken || "";
   const headers = useMemo(() => {
-    const h = {};
-    if (adminKey) h["x-admin-key"] = adminKey;
-    return h;
-  }, [adminKey]);
+    const nextHeaders = {};
+    if (adminKey) nextHeaders["x-admin-key"] = adminKey;
+    if (accessToken) nextHeaders.Authorization = `Bearer ${accessToken}`;
+    return nextHeaders;
+  }, [accessToken, adminKey]);
 
   const fetchUsers = useCallback(async () => {
     setError("");
@@ -97,7 +100,7 @@ export default function AdminUsers() {
     }
   };
 
-  if (!auth?.isAdminLoggedIn) {
+  if (!isAdmin && !auth?.isManagerLoggedIn) {
     return (
       <>
         <Navbar2 />
@@ -136,15 +139,9 @@ export default function AdminUsers() {
           <div className={layout.headerInner}>
             <div>
               <h1 className={layout.title}>Users</h1>
-              <div className={layout.sub}>Assign roles. Users must logout/login to see changes.</div>
+              <div className={layout.sub}>{isAdmin ? "Assign roles. Users must logout/login to see changes." : "User directory (read-only)"}</div>
             </div>
-            <div className={layout.tabs}>
-              <Link className={layout.tab} to="/admin/products">Add Product</Link>
-              <Link className={layout.tab} to="/admin/listing">Manage Products</Link>
-              <Link className={layout.tab} to="/admin/orders">Orders</Link>
-              <Link className={layout.tab} to="/admin/delivery">Delivery</Link>
-              <Link className={`${layout.tab} ${layout.tabActive}`} to="/admin/users">Users</Link>
-            </div>
+            <AdminNavigationTabs active="users" />
           </div>
         </div>
       </div>
@@ -154,7 +151,7 @@ export default function AdminUsers() {
           {banner ? <div className={layout.banner}>{banner}</div> : null}
           {error ? <div className={layout.alert}>{error}</div> : null}
 
-          <AdminKeyCard adminKey={adminKey} setAdminKey={setAdminKey} />
+          {isAdmin ? <AdminKeyCard adminKey={adminKey} setAdminKey={setAdminKey} /> : null}
 
           <div className={layout.card}>
             <div className={styles.controls}>
@@ -180,7 +177,7 @@ export default function AdminUsers() {
               </thead>
               <tbody>
                 {filtered.map((u) => (
-                  <UserRow key={u.username} user={u} onSave={updateRole} />
+                  <UserRow key={u.username} user={u} onSave={updateRole} readOnly={!isAdmin} />
                 ))}
                 {filtered.length === 0 ? (
                   <tr>
@@ -202,7 +199,7 @@ export default function AdminUsers() {
   );
 }
 
-function UserRow({ user, onSave }) {
+function UserRow({ user, onSave, readOnly }) {
   const [role, setRole] = useState(user?.role || "User");
   const [permissions, setPermissions] = useState(user?.permissions || []);
   const isAdmin = user?.role === "Admin";
@@ -229,7 +226,7 @@ function UserRow({ user, onSave }) {
         <td style={{ fontWeight: 900 }}>{user.username}</td>
         <td>{user.email}</td>
         <td>
-          <select className={styles.select} value={role} onChange={(e) => handleRoleChange(e.target.value)} disabled={isAdmin}>
+          <select className={styles.select} value={role} onChange={(e) => handleRoleChange(e.target.value)} disabled={isAdmin || readOnly}>
             {USER_ROLE_OPTIONS.map(({ value, label }) => (
               <option key={value} value={value}>
                 {label}
@@ -238,8 +235,8 @@ function UserRow({ user, onSave }) {
           </select>
         </td>
         <td style={{ textAlign: "right" }}>
-          <button className={`${styles.btn} ${styles.btnPrimary}`} type="button" onClick={() => onSave(user.username, role, permissions)} disabled={isAdmin}>
-            {isAdmin ? "Protected" : "Save"}
+          <button className={`${styles.btn} ${styles.btnPrimary}`} type="button" onClick={() => onSave(user.username, role, permissions)} disabled={isAdmin || readOnly}>
+            {isAdmin ? "Protected" : readOnly ? "Read-only" : "Save"}
           </button>
         </td>
       </tr>
@@ -250,7 +247,7 @@ function UserRow({ user, onSave }) {
             <div className={styles.permissions}>
               {MANAGER_PERMISSION_OPTIONS.map(({ value, label }) => (
                 <label className={styles.permission} key={value}>
-                  <input type="checkbox" checked={permissions.includes(value)} onChange={() => togglePermission(value)} />
+                  <input type="checkbox" checked={permissions.includes(value)} onChange={() => togglePermission(value)} disabled={readOnly} />
                   {label}
                 </label>
               ))}

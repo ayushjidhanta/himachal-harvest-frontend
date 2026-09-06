@@ -122,7 +122,7 @@ export default function Navbar2() {
 
     if (showManager || showPartner) {
       return [
-        { label: "Dashboard", to: showPartner ? "/partner" : "/manager" },
+        { label: "Dashboard", to: showPartner ? "/partner" : "/admin" },
       ];
     }
 
@@ -136,11 +136,13 @@ export default function Navbar2() {
   }, [showAdmin, showManager, showMyOrders, showPartner, showUser]);
 
   const navItems = useMemo(() => {
-    if (showManager || showPartner) {
+    if (showPartner) {
       return [
-        { to: showPartner ? "/partner" : "/manager", label: "Dashboard" },
+        { to: "/partner", label: "Dashboard" },
       ];
     }
+
+    if (showManager) return [{ to: "/admin", label: "Dashboard" }];
 
     if (showAdmin) {
       return [
@@ -172,7 +174,7 @@ export default function Navbar2() {
     ];
   }, [showAdmin, showManager, showPartner, showProducts, showUser]);
 
-  const brandHref = showPartner ? "/partner" : showManager ? "/manager" : "/";
+  const brandHref = showPartner ? "/partner" : showManager ? "/admin" : "/";
   const username = String(auth?.user?.username || "").trim();
   const avatarLetter = username ? username[0].toUpperCase() : "U";
   const roleLabel = showAdmin ? "Admin" : showManager ? "Manager" : showPartner ? "Delivery Partner" : showUser ? "User" : "Guest";

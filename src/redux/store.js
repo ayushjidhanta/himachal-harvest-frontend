@@ -1,17 +1,23 @@
 import {createStore, combineReducers, applyMiddleware} from 'redux';
 import thunk from 'redux-thunk';
-import { getProductsReducer } from './reducers/reducer';
+import { productCatalogReducer } from '../features/products/productReducer';
+import { adminOrderCatalogReducer } from '../features/orders/orderReducer';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import { cartReducer } from './reducers/cartReducer';
-import {persistStore, persistReducer} from 'redux-persist';
+import {createMigrate, persistStore, persistReducer} from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
+import { persistMigrations } from './persistMigrations';
 
 const persistConfig = {
     key : "root",
-    storage
+    storage,
+    version: 1,
+    migrate: createMigrate(persistMigrations, { debug: false }),
+    blacklist: ["adminOrderCatalog"],
 }
 const reducer = combineReducers({
-    getProducts: getProductsReducer,
+    productCatalog: productCatalogReducer,
+    adminOrderCatalog: adminOrderCatalogReducer,
     cart: cartReducer,
 });
 

@@ -23,16 +23,13 @@ import DeliveryPartner from "./components/Delivery/DeliveryPartner";
 import PartnerDashboard from "./components/Partner/PartnerDashboard";
 import AdminUsers from "./components/Admin/AdminUsers";
 import { clearAuthUser, getAuthUser } from "./service/authUser";
+import { normalizeUserRole, USER_ROLE } from "./constants/userRoles";
 
 
 import { useContext } from "react";
 import { useLocation } from "react-router-dom";
 
-const normalizeRole = (role) => {
-  const r = String(role || "").toLowerCase();
-  if (r === "partner") return "manager";
-  return r;
-};
+const normalizeRole = normalizeUserRole;
 
 
 export function RequireRole({ allow = [], children }) {
@@ -75,10 +72,10 @@ export default function App() {
     login();
   }, [login]);
 
-  const isAdminLoggedIn = role === "admin";
-  const isManagerLoggedIn = role === "manager";
-  const isUserLoggedIn = role === "user";
-  const isPartnerLoggedIn = role === "partner";
+  const isAdminLoggedIn = role === USER_ROLE.ADMIN;
+  const isManagerLoggedIn = role === USER_ROLE.MANAGER;
+  const isUserLoggedIn = role === USER_ROLE.USER;
+  const isPartnerLoggedIn = role === USER_ROLE.DELIVERY_PARTNER;
   const isLoggedIn = isAdminLoggedIn || isManagerLoggedIn || isUserLoggedIn || isPartnerLoggedIn;
 
   return (
@@ -88,8 +85,8 @@ export default function App() {
         user,
         isUserLoggedIn,
         isAdminLoggedIn,
-        isManagerLoggedIn: isManagerLoggedIn || isPartnerLoggedIn,
-        isPartnerLoggedIn: isManagerLoggedIn || isPartnerLoggedIn,
+        isManagerLoggedIn,
+        isPartnerLoggedIn,
         login: login,
         logout: logout,
       }}
@@ -150,6 +147,7 @@ export default function App() {
               </RequireRole>
             }
           />
+          <Route path="/admin" element={<Navigate to="/admin/products" replace />} />
           <Route
             path="/admin/listing"
             element={
@@ -158,6 +156,7 @@ export default function App() {
               </RequireRole>
             }
           />
+          <Route path="/admin/manage-products" element={<Navigate to="/admin/listing" replace />} />
           <Route
             path="/admin/orders"
             element={
@@ -191,7 +190,14 @@ export default function App() {
               </RequireRole>
             }
           />
-          <Route path="/partner" element={<Navigate to="/manager" replace />} />
+          <Route
+            path="/partner"
+            element={
+              <RequireRole allow={[USER_ROLE.DELIVERY_PARTNER]}>
+                <PartnerDashboard />
+              </RequireRole>
+            }
+          />
 
           <Route path="*" element={<NotFound />} />
         </Routes>

@@ -4,12 +4,9 @@ import navStyle from "./Nav2.module.css";
 import { useSelector } from "react-redux";
 import cartImage from "../../assets/Images/Cart.gif";
 import { AuthContext } from "../../context/auth-context";
+import { normalizeUserRole, USER_ROLE } from "../../constants/userRoles";
 
-const normalizeRole = (role) => {
-  const r = String(role || "").toLowerCase();
-  if (r === "partner") return "manager";
-  return r;
-};
+const normalizeRole = normalizeUserRole;
 
 const formatINR = (value) => {
   new Intl.NumberFormat("en-IN", { maximumFractionDigits: 0 }).format(
@@ -22,10 +19,11 @@ export default function Navbar2() {
   const { cartItems } = useSelector((state) => state.cart);
   const auth = useContext(AuthContext);
   const role = normalizeRole(auth?.role);
-  const showAdmin = role === "admin" || auth.isAdminLoggedIn;
-  const showUser = role === "user" || auth.isUserLoggedIn;
-  const showManager = role === "manager" || auth.isManagerLoggedIn || auth.isPartnerLoggedIn;
-  const isLoggedIn = showUser || showAdmin || showManager;
+  const showAdmin = role === USER_ROLE.ADMIN || auth.isAdminLoggedIn;
+  const showUser = role === USER_ROLE.USER || auth.isUserLoggedIn;
+  const showManager = role === USER_ROLE.MANAGER || auth.isManagerLoggedIn;
+  const showPartner = role === USER_ROLE.DELIVERY_PARTNER || auth.isPartnerLoggedIn;
+  const isLoggedIn = showUser || showAdmin || showManager || showPartner;
   const isGuest = !isLoggedIn;
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
 
@@ -122,9 +120,9 @@ export default function Navbar2() {
       ];
     }
 
-    if (showManager) {
+    if (showManager || showPartner) {
       return [
-        { label: "Dashboard", to: "/manager" },
+        { label: "Dashboard", to: showPartner ? "/partner" : "/manager" },
       ];
     }
 
@@ -135,12 +133,12 @@ export default function Navbar2() {
     }
 
     return [];
-  }, [showAdmin, showManager, showMyOrders, showUser]);
+  }, [showAdmin, showManager, showMyOrders, showPartner, showUser]);
 
   const navItems = useMemo(() => {
-    if (showManager) {
+    if (showManager || showPartner) {
       return [
-        { to: "/manager", label: "Dashboard" },
+        { to: showPartner ? "/partner" : "/manager", label: "Dashboard" },
       ];
     }
 
@@ -172,12 +170,12 @@ export default function Navbar2() {
       { to: "/return", label: "Return Policy" },
       { to: "/signin", label: "Sign In", mobileOnly: true },
     ];
-  }, [showAdmin, showManager, showProducts, showUser]);
+  }, [showAdmin, showManager, showPartner, showProducts, showUser]);
 
-  const brandHref = showManager ? "/manager" : "/";
+  const brandHref = showPartner ? "/partner" : showManager ? "/manager" : "/";
   const username = String(auth?.user?.username || "").trim();
   const avatarLetter = username ? username[0].toUpperCase() : "U";
-  const roleLabel = showAdmin ? "Admin" : showManager ? "Manager" : showUser ? "User" : "Guest";
+  const roleLabel = showAdmin ? "Admin" : showManager ? "Manager" : showPartner ? "Delivery Partner" : showUser ? "User" : "Guest";
 
   return (
     <div className={navStyle.header}>

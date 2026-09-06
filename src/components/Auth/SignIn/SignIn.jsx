@@ -15,12 +15,9 @@ import { SpinnerHimachalHarvest } from "../../../assets/Spinner/Spinner";
 
 // contextAPI
 import { AuthContext } from "../../../context/auth-context";
+import { normalizeUserRole, USER_ROLE } from "../../../constants/userRoles";
 
-const normalizeRole = (role) => {
-  const r = String(role || "").toLowerCase();
-  if (r === "partner") return "manager";
-  return r;
-};
+const normalizeRole = normalizeUserRole;
 
 const SignIn = () => {
   const navigate = useNavigate();
@@ -83,6 +80,8 @@ const SignIn = () => {
           username: u.username || credentials.username,
           email: u.email || "",
           role,
+          permissions: Array.isArray(u.permissions) ? u.permissions : [],
+          accessToken: response?.data?.accessToken || "",
         };
         setSpinner(false);
         credentialHandler("username", "");
@@ -97,8 +96,9 @@ const SignIn = () => {
             navigate(from, { replace: true });
             return;
           }
-          if (role === "admin") navigate("/admin");
-          else if (role === "manager") navigate("/manager");
+          if (role === USER_ROLE.ADMIN) navigate("/admin/products");
+          else if (role === USER_ROLE.MANAGER) navigate("/manager");
+          else if (role === USER_ROLE.DELIVERY_PARTNER) navigate("/partner");
           else navigate("/");
         }, 2000);
       } else {

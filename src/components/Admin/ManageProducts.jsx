@@ -1,7 +1,7 @@
 
 import React, { useCallback, useContext, useEffect, useMemo, useState } from "react";
-import axios from "axios";
 import { Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import Navbar2 from "../Home/Navbar2";
 import Footer from "../../assets/Footer/Footer";
 import { SpinnerHimachalHarvest } from "../../assets/Spinner/Spinner";
@@ -10,8 +10,9 @@ import AdminKeyCard from "./AdminKeyCard";
 import { getAdminKey } from "../../service/adminKey";
 import layout from "./AdminLayout.module.css";
 import styles from "./ManageProducts.module.css";
-
-const API_URL = process.env.REACT_APP_API_URL;
+import { updateProduct } from "../../features/products/productApi";
+import { loadProductCatalog } from "../../features/products/productActions";
+import { selectProductCatalog } from "../../features/products/productSelectors";
 
 const formatINR = (value) =>
   new Intl.NumberFormat("en-IN", { maximumFractionDigits: 0 }).format(
@@ -20,12 +21,12 @@ const formatINR = (value) =>
 
 export default function ManageProducts() {
   const auth = useContext(AuthContext);
+  const dispatch = useDispatch();
+  const { products, isFetching, error: catalogError } = useSelector(selectProductCatalog);
 
   const [adminKey, setAdminKey] = useState(getAdminKey());
 
-  const [products, setProducts] = useState([]);
   const [query, setQuery] = useState("");
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [banner, setBanner] = useState("");
 
@@ -33,23 +34,14 @@ export default function ManageProducts() {
   const [editForm, setEditForm] = useState(null);
   const [saving, setSaving] = useState(false);
 
-  const fetchProducts = useCallback(async () => {
-    if (!API_URL) {
-      setError("Missing REACT_APP_API_URL");
-      return;
-    }
-
-    setLoading(true);
+  const fetchProducts = useCallback(async ({ force = false } = {}) => {
     setError("");
     try {
-      const { data } = await axios.get(`${API_URL}/products/getProducts`);
-      setProducts(Array.isArray(data) ? data : []);
+      await dispatch(loadProductCatalog({ force }));
     } catch (e) {
       setError(e?.message || "Failed to load products");
-    } finally {
-      setLoading(false);
     }
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {
     fetchProducts();
@@ -88,10 +80,6 @@ export default function ManageProducts() {
   const update = (key, value) => setEditForm((prev) => ({ ...prev, [key]: value }));
 
   const save = async () => {
-    if (!API_URL) {
-      setError("Missing REACT_APP_API_URL");
-      return;
-    }
     if (!editing?.id) return;
 
     setSaving(true);
@@ -120,12 +108,10 @@ export default function ManageProducts() {
         description: editForm.description,
       };
 
-      const { data } = await axios.patch(`${API_URL}/products/${editing.id}`, payload, { headers });
+      await updateProduct(editing.id, payload, headers);
 
-      const updated = data?.data;
-      if (updated) {
-        setProducts((prev) => prev.map((p) => (p.id === updated.id ? updated : p)));
-      }
+      // The shared catalogue is refreshed so every product view receives this update.
+      dispatch(loadProductCatalog({ force: true })).catch(() => {});
       setBanner("Product updated successfully");
       setEditing(null);
       setEditForm(null);
@@ -146,7 +132,7 @@ export default function ManageProducts() {
     return (
       <>
         <Navbar2 />
-      <SpinnerHimachalHarvest show={loading || saving} />
+      <SpinnerHimachalHarvest show={isFetching || saving} />
         <div className={layout.shell}>
           <div className={layout.header}>
             <div className={layout.container}>
@@ -183,10 +169,10 @@ export default function ManageProducts() {
               <div className={layout.sub}>Edit existing products (same schema)</div>
             </div>
             <div className={layout.tabs}>
-              <Link className={layout.tab} to="/admin">
+              <Link className={layout.tab} to="/admin/products">
                 Add Product
               </Link>
-              <Link className={`${layout.tab} ${layout.tabActive}`} to="/admin/manage-products">
+              <Link className={`${layout.tab} ${layout.tabActive}`} to="/admin/listing">
                 Manage Products
               </Link>
               <Link className={layout.tab} to="/admin/orders">
@@ -206,7 +192,7 @@ export default function ManageProducts() {
       <div className={layout.body}>
         <div className={layout.container + " " + layout.scroll}>
           {banner ? <div className={layout.banner}>{banner}</div> : null}
-          {error ? <div className={layout.alert}>{error}</div> : null}
+          {error || catalogError ? <div className={layout.alert}>{error || catalogError}</div> : null}
 
           <AdminKeyCard adminKey={adminKey} setAdminKey={setAdminKey} />
 
@@ -219,8 +205,8 @@ export default function ManageProducts() {
                   onChange={(e) => setQuery(e.target.value)}
                 />
               </div>
-              <button className={`${styles.btn} ${styles.btnSecondary}`} type="button" onClick={fetchProducts}>
-                {loading ? "Loading..." : "Refresh"}
+              <button className={`${styles.btn} ${styles.btnSecondary}`} type="button" onClick={() => fetchProducts({ force: true })}>
+                {isFetching ? "Loading..." : "Refresh"}
               </button>
             </div>
 

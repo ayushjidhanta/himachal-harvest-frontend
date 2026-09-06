@@ -9,13 +9,14 @@ import AdminKeyCard from "./AdminKeyCard";
 import { getAdminKey } from "../../service/adminKey";
 import layout from "./AdminLayout.module.css";
 import styles from "./AdminUsers.module.css";
+import { MANAGER_PERMISSION_OPTIONS, USER_ROLE_OPTIONS } from "../../constants/userRoles";
+import Toast, { useToast } from "../common/Toast/Toast";
 
 const API_URL = process.env.REACT_APP_API_URL;
 
-const ROLES = ["User", "Manager", "Admin"];
-
 export default function AdminUsers() {
   const auth = useContext(AuthContext);
+  const { toast, showToast, dismissToast } = useToast();
   const [adminKey, setAdminKey] = useState(getAdminKey());
 
   const [users, setUsers] = useState([]);
@@ -64,19 +65,24 @@ export default function AdminUsers() {
     return (users || []).filter((u) => `${u.username} ${u.email} ${u.role}`.toLowerCase().includes(q));
   }, [users, query]);
 
-  const updateRole = async (username, role) => {
+  const updateRole = async (username, role, permissions) => {
     setError("");
     setBanner("");
     if (!API_URL) return;
 
     setLoading(true);
     try {
-      const { data } = await axios.patch(`${API_URL}/admin/users/${encodeURIComponent(username)}`, { role }, { headers });
+      const { data } = await axios.patch(
+        `${API_URL}/admin/users/${encodeURIComponent(username)}`,
+        { role, permissions },
+        { headers }
+      );
       const updated = data?.data;
       if (updated) {
         setUsers((prev) => prev.map((u) => (u.username === updated.username ? updated : u)));
       }
       setBanner(`Updated role for ${username}`);
+      showToast(`Role updated for ${username}.`, "success");
     } catch (err) {
       const status = err?.response?.status;
       const msg = err?.response?.data?.error?.message || err?.message || "Failed to update role";
@@ -85,6 +91,7 @@ export default function AdminUsers() {
       } else {
         setError(status ? `${status}: ${msg}` : msg);
       }
+      showToast(msg, "error");
     } finally {
       setLoading(false);
     }
@@ -122,17 +129,18 @@ export default function AdminUsers() {
     <div className={layout.shell}>
       <Navbar2 />
       <SpinnerHimachalHarvest show={loading} />
+      <Toast toast={toast} onDismiss={dismissToast} />
 
       <div className={layout.header}>
         <div className={layout.container}>
           <div className={layout.headerInner}>
             <div>
               <h1 className={layout.title}>Users</h1>
-              <div className={layout.sub}>Assign roles (User / Manager / Admin). Users must logout/login to see changes.</div>
+              <div className={layout.sub}>Assign roles. Users must logout/login to see changes.</div>
             </div>
             <div className={layout.tabs}>
-              <Link className={layout.tab} to="/admin">Add Product</Link>
-              <Link className={layout.tab} to="/admin/manage-products">Manage Products</Link>
+              <Link className={layout.tab} to="/admin/products">Add Product</Link>
+              <Link className={layout.tab} to="/admin/listing">Manage Products</Link>
               <Link className={layout.tab} to="/admin/orders">Orders</Link>
               <Link className={layout.tab} to="/admin/delivery">Delivery</Link>
               <Link className={`${layout.tab} ${layout.tabActive}`} to="/admin/users">Users</Link>
@@ -196,29 +204,60 @@ export default function AdminUsers() {
 
 function UserRow({ user, onSave }) {
   const [role, setRole] = useState(user?.role || "User");
+  const [permissions, setPermissions] = useState(user?.permissions || []);
+  const isAdmin = user?.role === "Admin";
 
   useEffect(() => {
     setRole(user?.role || "User");
-  }, [user?.role]);
+    setPermissions(Array.isArray(user?.permissions) ? user.permissions : []);
+  }, [user?.role, user?.permissions]);
+
+  const togglePermission = (permission) => {
+    setPermissions((current) =>
+      current.includes(permission) ? current.filter((value) => value !== permission) : [...current, permission]
+    );
+  };
+
+  const handleRoleChange = (nextRole) => {
+    setRole(nextRole);
+    if (nextRole !== "Manager") setPermissions([]);
+  };
 
   return (
-    <tr>
-      <td style={{ fontWeight: 900 }}>{user.username}</td>
-      <td>{user.email}</td>
-      <td>
-        <select className={styles.select} value={role} onChange={(e) => setRole(e.target.value)}>
-          {ROLES.map((r) => (
-            <option key={r} value={r}>
-              {r}
-            </option>
-          ))}
-        </select>
-      </td>
-      <td style={{ textAlign: "right" }}>
-        <button className={`${styles.btn} ${styles.btnPrimary}`} type="button" onClick={() => onSave(user.username, role)}>
-          Save
-        </button>
-      </td>
-    </tr>
+    <>
+      <tr>
+        <td style={{ fontWeight: 900 }}>{user.username}</td>
+        <td>{user.email}</td>
+        <td>
+          <select className={styles.select} value={role} onChange={(e) => handleRoleChange(e.target.value)} disabled={isAdmin}>
+            {USER_ROLE_OPTIONS.map(({ value, label }) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
+          </select>
+        </td>
+        <td style={{ textAlign: "right" }}>
+          <button className={`${styles.btn} ${styles.btnPrimary}`} type="button" onClick={() => onSave(user.username, role, permissions)} disabled={isAdmin}>
+            {isAdmin ? "Protected" : "Save"}
+          </button>
+        </td>
+      </tr>
+      {role === "Manager" && !isAdmin ? (
+        <tr className={styles.permissionRow}>
+          <td colSpan={4}>
+            <div className={styles.permissionTitle}>Manager permissions</div>
+            <div className={styles.permissions}>
+              {MANAGER_PERMISSION_OPTIONS.map(({ value, label }) => (
+                <label className={styles.permission} key={value}>
+                  <input type="checkbox" checked={permissions.includes(value)} onChange={() => togglePermission(value)} />
+                  {label}
+                </label>
+              ))}
+            </div>
+          </td>
+        </tr>
+      ) : null}
+    </>
   );
 }

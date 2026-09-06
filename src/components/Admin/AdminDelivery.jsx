@@ -1,12 +1,12 @@
 import React, { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
 import Navbar2 from "../Home/Navbar2";
 import Footer from "../../assets/Footer/Footer";
 import { SpinnerHimachalHarvest } from "../../assets/Spinner/Spinner";
 import { AuthContext } from "../../context/auth-context";
 import AdminKeyCard from "./AdminKeyCard";
 import { getAdminKey } from "../../service/adminKey";
+import AdminNavigationTabs from "./AdminNavigationTabs";
 import layout from "./AdminLayout.module.css";
 import styles from "./AdminDelivery.module.css";
 import { updateAdminOrder } from "../../features/orders/orderApi";
@@ -42,11 +42,13 @@ export default function AdminDelivery() {
   const [error, setError] = useState("");
   const [banner, setBanner] = useState("");
 
+  const accessToken = auth?.user?.accessToken || "";
   const headers = useMemo(() => {
-    const h = {};
-    if (adminKey) h["x-admin-key"] = adminKey;
-    return h;
-  }, [adminKey]);
+    const nextHeaders = {};
+    if (adminKey) nextHeaders["x-admin-key"] = adminKey;
+    if (accessToken) nextHeaders.Authorization = `Bearer ${accessToken}`;
+    return nextHeaders;
+  }, [accessToken, adminKey]);
 
   const fetchOrders = useCallback(async ({ force = false } = {}) => {
     setError("");
@@ -105,7 +107,7 @@ export default function AdminDelivery() {
     }
   };
 
-  if (!auth?.isAdminLoggedIn) {
+  if (!auth?.isAdminLoggedIn && !auth?.isManagerLoggedIn) {
     return (
       <>
         <Navbar2 />
@@ -145,23 +147,7 @@ export default function AdminDelivery() {
               <h1 className={layout.title}>Delivery Management</h1>
               <div className={layout.sub}>Step 2: after assigning a Delivery Partner in Orders, generate and share live-tracking links here.</div>
             </div>
-            <div className={layout.tabs}>
-              <Link className={layout.tab} to="/admin/products">
-                Add Product
-              </Link>
-              <Link className={layout.tab} to="/admin/listing">
-                Manage Products
-              </Link>
-              <Link className={layout.tab} to="/admin/orders">
-                Orders
-              </Link>
-              <Link className={`${layout.tab} ${layout.tabActive}`} to="/admin/delivery">
-                Delivery
-              </Link>
-              <Link className={layout.tab} to="/admin/users">
-                Users
-              </Link>
-            </div>
+            <AdminNavigationTabs active="delivery" />
           </div>
         </div>
       </div>
@@ -171,7 +157,7 @@ export default function AdminDelivery() {
           {banner ? <div className={layout.banner}>{banner}</div> : null}
           {error || catalogError ? <div className={layout.alert}>{error || catalogError}</div> : null}
 
-          <AdminKeyCard adminKey={adminKey} setAdminKey={setAdminKey} />
+          {auth?.isAdminLoggedIn ? <AdminKeyCard adminKey={adminKey} setAdminKey={setAdminKey} /> : null}
 
           <div className={layout.card}>
             <div className={styles.controls}>

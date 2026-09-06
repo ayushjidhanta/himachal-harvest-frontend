@@ -92,13 +92,10 @@ const SignIn = () => {
         showAlert(response.data.message);
         setTimeout(() => {
           const from = location?.state?.from?.pathname;
-          if (from && from !== "/signin" && from !== "/signup") {
-            navigate(from, { replace: true });
-            return;
-          }
           if (role === USER_ROLE.ADMIN) navigate("/admin/products");
-          else if (role === USER_ROLE.MANAGER) navigate("/manager");
+          else if (role === USER_ROLE.MANAGER) navigate("/admin");
           else if (role === USER_ROLE.DELIVERY_PARTNER) navigate("/partner");
+          else if (from && from !== "/signin" && from !== "/signup") navigate(from, { replace: true });
           else navigate("/");
         }, 2000);
       } else {

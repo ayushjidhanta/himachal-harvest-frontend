@@ -1,6 +1,5 @@
 
 import React, { useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import Navbar2 from "../Home/Navbar2";
 import Footer from "../../assets/Footer/Footer";
@@ -8,6 +7,8 @@ import { SpinnerHimachalHarvest } from "../../assets/Spinner/Spinner";
 import { AuthContext } from "../../context/auth-context";
 import AdminKeyCard from "./AdminKeyCard";
 import { getAdminKey } from "../../service/adminKey";
+import { getOperationsHeaders } from "../../service/operationsAuth";
+import AdminNavigationTabs from "./AdminNavigationTabs";
 import layout from "./AdminLayout.module.css";
 import styles from "./ManageProducts.module.css";
 import { updateProduct } from "../../features/products/productApi";
@@ -87,8 +88,7 @@ export default function ManageProducts() {
     setBanner("");
 
     try {
-      const headers = {};
-      if (adminKey) headers["x-admin-key"] = adminKey;
+      const headers = getOperationsHeaders(adminKey);
 
       const payload = {
         url: editForm.url,
@@ -128,7 +128,7 @@ export default function ManageProducts() {
     }
   };
 
-  if (!auth?.isAdminLoggedIn) {
+  if (!auth?.isAdminLoggedIn && !auth?.isManagerLoggedIn) {
     return (
       <>
         <Navbar2 />
@@ -168,23 +168,7 @@ export default function ManageProducts() {
               <h1 className={layout.title}>Manage Products</h1>
               <div className={layout.sub}>Edit existing products (same schema)</div>
             </div>
-            <div className={layout.tabs}>
-              <Link className={layout.tab} to="/admin/products">
-                Add Product
-              </Link>
-              <Link className={`${layout.tab} ${layout.tabActive}`} to="/admin/listing">
-                Manage Products
-              </Link>
-              <Link className={layout.tab} to="/admin/orders">
-                Orders
-              </Link>
-              <Link className={layout.tab} to="/admin/delivery">
-                Delivery
-              </Link>
-              <Link className={layout.tab} to="/admin/users">
-                Users
-              </Link>
-            </div>
+            <AdminNavigationTabs active="listing" />
           </div>
         </div>
       </div>
@@ -194,7 +178,7 @@ export default function ManageProducts() {
           {banner ? <div className={layout.banner}>{banner}</div> : null}
           {error || catalogError ? <div className={layout.alert}>{error || catalogError}</div> : null}
 
-          <AdminKeyCard adminKey={adminKey} setAdminKey={setAdminKey} />
+          {auth?.isAdminLoggedIn ? <AdminKeyCard adminKey={adminKey} setAdminKey={setAdminKey} /> : null}
 
           <div className={layout.card}>
             <div className={styles.controls}>
